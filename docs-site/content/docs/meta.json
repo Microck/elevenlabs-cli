@@ -1,0 +1,15 @@
+{
+  "title": "Documentation",
+  "pages": [
+    "index",
+    "install",
+    "auth",
+    "galleton",
+    "examples",
+    "profiles",
+    "output",
+    "reference",
+    "troubleshooting",
+    "releases"
+  ]
+}

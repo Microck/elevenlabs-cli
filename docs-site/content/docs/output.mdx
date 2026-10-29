@@ -1,0 +1,30 @@
+---
+title: Output and agents
+description: Use JSON, binary streams and shell completion.
+---
+
+Commands print JSON to stdout. `--format pretty` indents it. `--format jsonl` emits top-level list items individually; paginated objects retain their page envelope. There is no automatic pagination.
+
+Errors go to stderr. `--error-format json` gives a structured error with an exit code. `--debug` logs request method, path, status and duration, never headers or bodies. `--no-input` keeps execution non-interactive.
+
+```sh
+elevenlabs skills list
+elevenlabs skills get elevenlabs
+elevenlabs completion bash
+elevenlabs completion zsh
+elevenlabs completion fish
+elevenlabs completion powershell
+```
+
+Audio with `--output -` contains only binary bytes on stdout. File downloads instead print JSON with the path and byte count.
+
+| Exit | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Local or network failure |
+| 2 | Invalid command or input |
+| 3 | Authentication required |
+| 4 | Permission, plan or connection restriction |
+| 5 | Rate limit |
+| 6 | Remote API error |
+| 130 | Interrupted |

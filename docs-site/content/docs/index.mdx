@@ -1,0 +1,21 @@
+---
+title: Overview
+description: ElevenLabs workflows from the terminal.
+---
+
+`elevenlabs` uses your web account through a Galleton-managed browser session. It returns JSON by default and streams generated audio to a file or stdout.
+
+Start with [installation](/docs/install), then [sign in](/docs/auth). The [examples](/docs/examples) cover voices, speech, dialogue and history. [Command reference](/docs/reference) is generated from the CLI.
+
+## What works
+
+| Workflow | Commands |
+| --- | --- |
+| Account and credits | `me show`, `me subscription`, `doctor` |
+| Models and voices | `model list`, `voice list`, `voice search`, `voice show` |
+| Speech and dialogue | `speech generate`, `dialogue generate` |
+| Sound effects | `sound generate`, `sound download` |
+| Generation history | `history list`, `history show`, `history download` |
+| Multiple accounts | `profile list`, `profile use`, `profile remove` |
+
+This is an unofficial client, not full feature parity with the website. Read [limits and troubleshooting](/docs/troubleshooting) before automating generation.

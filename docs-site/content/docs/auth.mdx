@@ -1,0 +1,38 @@
+---
+title: Authentication
+description: Import your signed-in browser session into Galleton.
+---
+
+## Export the session
+
+Sign into ElevenLabs in your regular browser, then print the export script:
+
+```sh
+elevenlabs auth export-script
+```
+
+Paste that script into the developer console of the signed-in `https://elevenlabs.io` tab. It downloads `elevenlabs-session.json`. The file contains Firebase tokens and the browser user agent. Keep it private.
+
+A Cookie-Editor export is not enough: ElevenLabs stores the Firebase refresh token in local storage, not in the marketplace-style cookies used by wallapop-cli and vinted-cli.
+
+## Import and check
+
+```sh
+elevenlabs auth login --session ~/Downloads/elevenlabs-session.json
+elevenlabs auth status
+elevenlabs auth status --check
+elevenlabs doctor
+```
+
+Use `--session -` to read JSON through stdin. Login verifies the new session before replacing your profile. Delete the exported file when you no longer need it. Never paste tokens into an issue or commit them.
+
+## Renew or sign out
+
+```sh
+elevenlabs auth refresh
+elevenlabs auth logout --yes
+```
+
+Logout removes the managed session and its local reference. It does not sign your browser out. A revoked session requires a fresh browser export.
+
+See [the session engine](/docs/galleton) for storage and lifecycle details.

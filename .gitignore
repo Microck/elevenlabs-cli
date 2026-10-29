@@ -9,3 +9,10 @@
 
 /docs/*-requests.json
 /docs/task-record.md
+/docs-site/node_modules/
+/docs-site/.next/
+/docs-site/out/
+/docs-site/.source/
+/docs-site/*.tsbuildinfo
+/internal/galleton/bundle/*.bin
+/internal/galleton/bundle/payload_*.go

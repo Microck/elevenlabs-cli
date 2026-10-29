@@ -105,6 +105,19 @@ func engineBinary(ctx context.Context, dir string) (string, error) {
 	if runtime.GOOS == "windows" {
 		ext = ".exe"
 	}
+	// Release and make builds embed the matching engine. Verify extracted bytes
+	// before reuse so a damaged cached executable is replaced.
+	if len(bundle.Binary) > 0 {
+		hash := sha256.Sum256(bundle.Binary)
+		path := filepath.Join(binDir, fmt.Sprintf("galleton-%x%s", hash[:16], ext))
+		if current, err := readRegular(path, int64(len(bundle.Binary))); err == nil && sha256.Sum256(current) == hash {
+			return path, nil
+		}
+		if err := atomicFile(path, bundle.Binary, 0700); err != nil {
+			return "", err
+		}
+		return path, nil
+	}
 	// Source installs build and cache the same checksum-pinned module as the SDK.
 	path := filepath.Join(binDir, "galleton-"+bundle.Version+ext)
 	if raw, err := readRegular(path, 32<<20); err == nil {

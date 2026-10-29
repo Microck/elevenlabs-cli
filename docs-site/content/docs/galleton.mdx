@@ -1,0 +1,31 @@
+---
+title: Session engine
+description: How Galleton owns credentials and renewal.
+---
+
+The CLI uses the official Galleton Go SDK, pinned to v0.1.1. Galleton stores Firebase credentials in an encrypted local vault and serializes refresh across CLI processes. The profile stores a session ID, user agent and public Firebase application key, never the account's access or refresh token.
+
+As in wallapop-cli, the CLI obtains a short-lived bearer header from the SDK. Requests then stream directly from ElevenLabs, including audio. Vinted's buffered request path is not used for audio.
+
+## Lifecycle
+
+The first authenticated command starts the local engine on an OS-selected loopback port. Other commands share it through process leases. Ten seconds after the last client exits, it drains and stops. The next command reuses the vault. Nothing is installed at OS login.
+
+```sh
+elevenlabs auth service status
+elevenlabs auth service stop
+```
+
+Status does not start the engine. Stop refuses while a command holds a lease.
+
+## Storage
+
+State lives under the OS user config directory in `elevenlabs-web-cli`. `profiles/` holds references and `galleton/` holds the vault, encryption key and local API token. Unix files use private permissions; Windows relies on the directory ACL.
+
+Protect the whole directory. Encryption does not protect against another process running as the same user or a backup containing both the vault and its key.
+
+## Recovery
+
+Old plaintext profiles need a fresh `auth login`. The CLI does not migrate their tokens automatically. If the running adapter differs, finish active commands, run `auth service stop`, and retry. Failed replacement imports preserve the previous profile. Retired session IDs remain recorded until deletion succeeds.
+
+Advanced installations may set `ELEVENLABS_GALLETON_URL` and `ELEVENLABS_GALLETON_TOKEN_FILE` to a separately managed loopback engine with the ElevenLabs adapter. Its owner controls lifecycle. Normal installs leave these unset.

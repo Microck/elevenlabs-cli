@@ -1,194 +1,184 @@
-# elevenlabs-web-cli
+<p align="center">
+  <img src=".github/assets/elevenlabs-cli-logo.svg" width="720" alt="elevenlabs cli">
+</p>
 
-`elevenlabs` is a terminal client for the ElevenLabs web app. It imports your
-browser session into Galleton and exposes account, voice, speech,
-dialogue, sound-effect and history commands. Output is JSON by default for
-scripts and agents; `--format pretty` is for reading in a terminal.
+<p align="center">
+  <a href="https://github.com/Microck/elevenlabs-web-cli/releases">releases</a> ·
+  <a href="https://microck.github.io/elevenlabs-web-cli/docs/">documentation</a> ·
+  <a href="docs-site/content/docs/examples.mdx">examples</a> ·
+  <a href="docs/commands.md">command reference</a>
+</p>
 
-The project follows the Go/Cobra, noun/verb, profile and session-import
-conventions used by wallapop-cli and vinted-cli. It uses the web API rather than
-an ElevenLabs developer API key. It is an unofficial client.
+---
 
-## Install from this checkout
+`elevenlabs` is a terminal cli for the ElevenLabs web app. browse voices, generate speech and dialogue, create sound effects, and download audio from your own account. output is json by default so it works with `jq`, scripts and agents. `--format pretty` is for reading in a terminal.
 
-Requires Go 1.25 or newer.
+## why
+
+if you already use ElevenLabs and want the same account in your terminal, this cli gives you commands for the audio workflows without a developer api key. Galleton manages the imported browser session, and audio streams straight to a file or stdout.
+
+## quickstart
+
+### release downloads
+
+download the archive for your system from [releases](https://github.com/Microck/elevenlabs-web-cli/releases).
 
 ```sh
+# example: linux arm64
+gh release download --repo Microck/elevenlabs-web-cli \
+  --pattern '*_linux_arm64.tar.gz' --pattern checksums.txt
+sha256sum --ignore-missing --check checksums.txt
+tar -xzf elevenlabs_0.1.0_linux_arm64.tar.gz
+./elevenlabs --version
+```
+
+archives cover linux, macos and windows on amd64 and arm64. windows downloads are zip files. extract the executable into a directory on PATH. each release includes the pinned Galleton engine, so no Go installation or separate daemon setup is needed. macos builds are not notarized; windows builds are not code-signed.
+
+### building from source
+
+requires Go 1.25 or newer:
+
+```sh
+gh repo clone Microck/elevenlabs-web-cli
+cd elevenlabs-web-cli
 make install
 elevenlabs --version
-elevenlabs --help
 ```
 
-Go installs the command in `GOBIN`, or `$(go env GOPATH)/bin` when GOBIN is unset.
-Add that directory to PATH. `go install ./cmd/elevenlabs` is equivalent; `make
-build` keeps a development build in `bin/elevenlabs`.
+Go installs into `GOBIN`, or `$(go env GOPATH)/bin` by default. `make install` bundles Galleton. plain `go install ./cmd/elevenlabs` prepares the same pinned engine on first authenticated use.
 
-For npm installation, also install Node 22 or newer:
+with Node 22+ and Go installed, `npm install -g .` installs from this checkout. there is no public npm, Homebrew, Scoop or AUR package yet.
 
-```sh
-npm install -g .
-elevenlabs --version
-```
+### auth
 
-The npm package compiles the included Go source during installation. It has no
-runtime npm dependencies. This checkout is not published to npm, Homebrew,
-Scoop or GitHub Releases; these commands do not depend on a remote release.
+ElevenLabs keeps its Firebase login in browser local storage. a cookie-only export is not enough.
 
-## Sign in
-
-Sign into ElevenLabs in your normal browser. Print the export script:
+1. sign into ElevenLabs in your regular browser.
+2. run `elevenlabs auth export-script` and paste the script into that tab's developer console.
+3. import the downloaded session file:
 
 ```sh
-elevenlabs auth export-script
-```
-
-Run that script in the developer console of your signed-in ElevenLabs tab. It
-downloads a session JSON file containing your tokens and the browser's actual
-user agent. Import it without putting secrets on the command line:
-
-```sh
-elevenlabs auth login --session /path/to/elevenlabs-session.json
-elevenlabs auth status
-elevenlabs doctor
-```
-
-`--session -` reads the JSON from stdin. Keep the export private and delete your
-copy when it is no longer needed. Never commit it. Old test exports without
-`user_agent` must be recreated with the current script.
-
-Galleton v0.1.1 owns token refresh and stores credentials in an encrypted local
-vault. The CLI uses its official Go SDK, following wallapop-cli's bearer-header
-pattern so audio can stream directly from ElevenLabs. Login verifies the new
-session before replacing your profile. The profile file contains a session ID,
-browser user agent and Firebase application key, never access or refresh tokens.
-
-The engine starts automatically when needed, is shared across commands, and
-stops ten seconds after its last client exits. On first use, source installations
-build and cache the pinned engine using Go and verify its module checksums.
-No separate Galleton installation or OS startup service is needed.
-
-State lives under your OS user config directory in `elevenlabs-web-cli`.
-`galleton/` contains the vault and local keys; `profiles/` contains references.
-Unix files are private; Windows uses the containing directory's ACL. Protect
-the whole directory: vault encryption does not protect against other processes
-running as your user. Set `ELEVENLABS_CONFIG_DIR` for isolated state.
-Existing plaintext profiles require a fresh `auth login`.
-
-```sh
-elevenlabs auth status          # local reference only
-elevenlabs auth status --check  # engine and account access
-elevenlabs auth refresh
-elevenlabs auth service status
-elevenlabs auth service stop
-```
-
-## Use the CLI
-
-```sh
+elevenlabs auth login --session ~/Downloads/elevenlabs-session.json
+elevenlabs auth status --check
 elevenlabs me subscription --format pretty
-elevenlabs model list
-elevenlabs voice list --format jsonl
+```
+
+`--session -` reads from stdin. keep the export private and delete it when it is no longer needed. Galleton stores the tokens in an encrypted vault; local profiles store only a session reference and non-secret settings. the imported browser user agent is preserved.
+
+```sh
+elevenlabs auth status
+elevenlabs auth refresh
+elevenlabs auth logout --yes
+```
+
+the engine starts when needed and stops ten seconds after its last client exits. no OS startup service is installed. `auth service status` inspects it; `auth service stop` stops an idle engine. see [session lifecycle and recovery](docs-site/content/docs/galleton.mdx).
+
+## command surface
+
+| command | what it does |
+| --- | --- |
+| `auth login / status / refresh / logout` | import, inspect, renew or forget a managed session |
+| `auth export-script` | print the browser session export script |
+| `auth service status / stop` | inspect or stop the local engine |
+| `profile list / use / remove` | keep multiple accounts separate |
+| `me show / subscription` | account details, plan and credit allowance |
+| `model list` | available models and capabilities |
+| `voice list / search / collections / show / settings / defaults` | browse voices and settings |
+| `speech generate` | generate speech from a text file |
+| `dialogue generate` | generate dialogue from text and voice pairs |
+| `sound generate / download` | create and download sound effects |
+| `history list / show / download` | find, inspect and download generated audio |
+| `config path / list / get / set` | local settings and default profile |
+| `doctor` | check session renewal and account access |
+| `skills list / get` | embedded instructions for agents |
+| `completion bash\|zsh\|fish\|powershell` | shell completion |
+
+global flags: `--profile`, `--format json|jsonl|pretty`, `--error-format text|json`, `--no-input`, `--debug`.
+
+## examples
+
+```sh
 elevenlabs voice search narrator --language en --page-size 10
-elevenlabs voice show Xb7hH8MSUJpSbSDYk0k2
+elevenlabs voice list --format jsonl
 elevenlabs voice settings onwK4e9ZLuTAKqWW03F9
 
 elevenlabs speech generate --text-file narration.txt \
   --voice Xb7hH8MSUJpSbSDYk0k2 --output narration.mp3
 
 elevenlabs dialogue generate --input dialogue.json --output dialogue.mp3
-elevenlabs history list --source TTS --search 'Hello'
-elevenlabs history show HISTORY_ID
+elevenlabs history list --source TTS --search Hello
 elevenlabs history download HISTORY_ID --output saved.mp3
 
 elevenlabs sound generate --text-file prompt.txt --duration 1 --variants 1
 elevenlabs sound download SOUND_ID --output effect.opus
 ```
 
-Dialogue input is a JSON array:
+`dialogue.json` contains an array of text and voice pairs:
 
 ```json
 [
-  {"text": "Hello.", "voice_id": "Xb7hH8MSUJpSbSDYk0k2"},
-  {"text": "Hi there.", "voice_id": "onwK4e9ZLuTAKqWW03F9"}
+  {"text":"Hello.","voice_id":"Xb7hH8MSUJpSbSDYk0k2"},
+  {"text":"Hi there.","voice_id":"onwK4e9ZLuTAKqWW03F9"}
 ]
 ```
 
-Generation consumes credits. Sound generation requires Explore sharing to
-already be disabled in your account. Audio commands require `--output FILE` or
-`--output -` for binary stdout. Existing files are never overwritten, and failed
-downloads remove their incomplete output. Generation is never retried.
+generation consumes account credits and is never retried automatically. sound generation requires Explore sharing to already be disabled in the website. audio commands require `--output FILE` or `--output -` for binary stdout. existing files are never overwritten.
 
-## Profiles and configuration
+## profiles
 
 ```sh
 elevenlabs auth login --profile work --session work-session.json
-elevenlabs profile list
 elevenlabs profile use work
 elevenlabs me show
 elevenlabs me show --profile default
-
-elevenlabs config path
 elevenlabs config list
-elevenlabs config get default_profile
-elevenlabs config set default_profile work
-
-elevenlabs auth logout --yes
 elevenlabs profile remove work --yes
 ```
 
-An explicit `--profile` overrides the saved selection. Removing a profile only
-forgets its Galleton session and removes its local reference; it does not revoke browser sessions or switch
-to another account. Config contains only settings, not credentials.
+`--profile` overrides the saved default. removing a profile forgets its managed session without signing out your browser or silently switching accounts. `ELEVENLABS_CONFIG_DIR` overrides the OS user config directory.
 
-## Agents and shell completion
+## shell completion
 
 ```sh
-elevenlabs skills list
-elevenlabs skills get elevenlabs
-elevenlabs completion bash
-elevenlabs completion zsh
-elevenlabs completion fish
-elevenlabs completion powershell
+# bash: load for this shell
+source <(elevenlabs completion bash)
+
+# fish
+mkdir -p ~/.config/fish/completions
+elevenlabs completion fish > ~/.config/fish/completions/elevenlabs.fish
+
+# zsh: save into a writable directory in fpath
+elevenlabs completion zsh > "${fpath[1]}/_elevenlabs"
 ```
 
-Global flags include `--profile`, `--format json|jsonl|pretty`,
-`--error-format text|json`, `--no-input` and `--debug`. Commands never prompt.
-Errors and request diagnostics go to stderr; debug logs omit headers and bodies.
-Paginated JSON retains its page envelope. Lists currently fetch one page.
+```powershell
+elevenlabs completion powershell >> $PROFILE
+```
 
-Exit codes are 0 for success, 1 for local/network errors, 2 for usage, 3 for
-invalid authentication, 4 for permission/plan/connection restrictions, 5 for
-rate limits, 6 for other API errors, and 130 for interruption.
+## exit codes
 
-## Development
+`0` success, `1` local/network failure, `2` usage, `3` authentication, `4` permission or connection restriction, `5` rate limit, `6` remote api error, `130` interrupted. errors go to stderr; `--error-format json` makes them machine-readable.
+
+## current limits
+
+account and browsing commands worked live with the earlier transport. the Galleton integration is tested with the real daemon and local Firebase fixtures. successful live login through Galleton and direct generation with the working Windows session remain unverified.
+
+successful browser captures establish the speech, dialogue and download request shapes. the research connection receives `detected_unusual_activity` during generation. the cli reports that restriction without retrying; a valid login does not guarantee generation access.
+
+music, Studio, transcription uploads, standalone voice transformations, dubbing, voice cloning and agent execution are not implemented. see [verification and coverage](docs/verification.md).
+
+## development and releases
 
 ```sh
-make build
-make docs
-make check
-npm run check
-npm pack --ignore-scripts
+make build       # bundled development build in bin/
+make check       # vet, real-engine tests, docs and formatting
+make docs        # regenerate both command references
 ```
 
-`make check` runs vet, tests, generated-reference verification and formatting
-checks. Tests use disposable files and local HTTP fixture servers. CI also
-installs the packed npm source into an isolated prefix and exercises its command.
-`.goreleaser.yaml` defines cross-platform snapshot builds; publishing is disabled.
+the Fumadocs site is in `docs-site`. it includes installation, auth, examples, profiles, output, troubleshooting and the generated command reference. see [docs-site/README.md](docs-site/README.md) to build it.
 
-- [Generated command reference](docs/commands.md)
-- [CLI contract](docs/cli-spec.md)
-- [Verification and coverage](docs/verification.md)
+version tags trigger the [release workflow](.github/workflows/release.yml). it checks the code, builds six platform archives with the pinned engine, and publishes a stable GitHub release with checksums. see [release instructions](docs-site/content/docs/releases.mdx).
 
-## Current limits
+## disclaimer
 
-Successful Windows browser captures establish the generation and download
-request shapes. Live CLI account and browsing commands work. Direct CLI
-speech generation from the research connection receives ElevenLabs'
-`detected_unusual_activity` restriction; successful direct generation on the
-working Windows session is still unverified. Login success does not prove
-credit-generating operations are allowed.
-
-Music, Studio, transcription uploads, standalone voice transformations, dubbing,
-voice cloning and agent execution are not implemented. Some appeared in the
-browser capture, but their complete CLI workflows remain unverified. This is
-not full ElevenLabs feature parity.
+this is an unofficial client and is not affiliated with ElevenLabs. web endpoints can change independently of the cli. protect your exported session and only generate content you are authorized to create.

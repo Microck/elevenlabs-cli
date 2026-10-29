@@ -1,0 +1,43 @@
+---
+title: Installation
+description: Install a release or build from source.
+---
+
+## GitHub releases
+
+Download the archive for your OS and architecture from [Releases](https://github.com/Microck/elevenlabs-web-cli/releases).
+
+Release archives support Linux, macOS and Windows on amd64 and arm64. They include Galleton, so Go is not needed at runtime. Extract `elevenlabs` or `elevenlabs.exe` into a directory on PATH.
+
+```sh
+# Example: Linux arm64. Use linux_amd64, darwin_arm64 or darwin_amd64 as needed.
+gh release download --repo Microck/elevenlabs-web-cli --pattern '*_linux_arm64.tar.gz' --pattern checksums.txt
+sha256sum --ignore-missing --check checksums.txt
+tar -xzf elevenlabs_0.1.0_linux_arm64.tar.gz
+./elevenlabs --version
+```
+
+On macOS use `shasum -a 256 ARCHIVE` and compare with `checksums.txt`. Windows archives are ZIP files; use `Get-FileHash ARCHIVE.zip -Algorithm SHA256`. macOS builds are not notarized and Windows builds are not code-signed.
+
+## Source installation
+
+Requires Go 1.25 or newer.
+
+```sh
+gh repo clone Microck/elevenlabs-web-cli
+cd elevenlabs-web-cli
+make install
+elevenlabs --version
+```
+
+Go installs into `GOBIN`, or `$(go env GOPATH)/bin` by default. Add that directory to PATH. `make install` bundles Galleton. Plain `go install ./cmd/elevenlabs` builds the CLI alone and prepares the pinned engine on first authenticated use.
+
+## Local npm installation
+
+With Go 1.25+ and Node 22+ installed:
+
+```sh
+npm install -g .
+```
+
+This installs from the checkout and builds the bundled CLI. There is no public npm, Homebrew, Scoop or AUR package yet.

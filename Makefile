@@ -1,12 +1,15 @@
 VERSION ?= dev
 
-.PHONY: build install test check fmt vet docs docs-check
+.PHONY: bundle build install test check fmt vet docs docs-check
 
-build:
-	go build -trimpath -ldflags "-X main.version=$(VERSION)" -o bin/elevenlabs ./cmd/elevenlabs
+bundle:
+	go run ./cmd/bundle-galleton
 
-install:
-	go install -trimpath -ldflags "-X main.version=$(VERSION)" ./cmd/elevenlabs
+build: bundle
+	go build -tags galleton_bundle -trimpath -ldflags "-X main.version=$(VERSION)" -o bin/elevenlabs ./cmd/elevenlabs
+
+install: bundle
+	go install -tags galleton_bundle -trimpath -ldflags "-X main.version=$(VERSION)" ./cmd/elevenlabs
 
 test:
 	@set -eu; engine_dir=$$(mktemp -d); trap 'rm -rf "$$engine_dir"' EXIT; \

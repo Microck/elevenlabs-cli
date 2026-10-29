@@ -216,6 +216,7 @@ and account access. `auth service status` inspects the engine without starting
 it; `auth service stop` stops it when idle. Commands lease the engine and it
 stops ten seconds after the last client exits. No OS startup service is installed. Profile mutation locks serialize login/logout;
 retired session IDs remain recorded until Galleton confirms deletion.
-Source installs build and cache the pinned engine on first authenticated use,
-verifying its module checksums. Go is required for that first preparation.
+Release archives, `make install` and local npm installs embed the pinned engine.
+Plain `go install` builds cache the engine on first authenticated use, verifying
+its module checksums. Go is required for that first preparation.
 Old plaintext profile files require a fresh login; no legacy auth path remains.

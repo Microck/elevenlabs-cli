@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/Microck/elevenlabs-web-cli/internal/galleton/bundle"
 )
 
 func TestMain(m *testing.M) {
@@ -21,6 +23,9 @@ func TestMain(m *testing.M) {
 }
 
 func TestManagedHostLeasesAndRestart(t *testing.T) {
+	if len(bundle.Binary) > 0 {
+		t.Setenv("PATH", t.TempDir())
+	}
 	for _, key := range []string{"ELEVENLABS_GALLETON_DIR", "ELEVENLABS_GALLETON_URL", "ELEVENLABS_GALLETON_TOKEN_FILE"} {
 		t.Setenv(key, "")
 	}

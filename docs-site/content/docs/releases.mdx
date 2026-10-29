@@ -1,0 +1,17 @@
+---
+title: Releases
+description: Install verified archives and cut a release.
+---
+
+Stable releases live in the public [GitHub repository](https://github.com/Microck/elevenlabs-web-cli/releases). They contain Linux, macOS and Windows archives for amd64 and arm64, a pinned embedded Galleton engine and `checksums.txt`.
+
+## Maintainer workflow
+
+1. Update the version in `package.json` and `package-lock.json`, and write `docs/release-notes.md`.
+2. Run `make check` and the docs site's lint, typecheck and build commands.
+3. Commit the changes and push `main`.
+4. Create and push an annotated version tag such as `v0.1.0`.
+
+The tag workflow reruns checks, verifies that the package version matches the tag, builds all six targets with GoReleaser and publishes the release. It does not publish npm, Homebrew, Scoop or AUR packages. Manual workflow dispatch can release an existing version tag.
+
+Release notes describe user-visible changes and known limits. Releases are stable unless a prerelease is explicitly requested. Never replace a published asset silently; fix the issue and cut another version.

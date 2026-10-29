@@ -1,8 +1,12 @@
 version: 2
 project_name: elevenlabs
+before:
+  hooks:
+    - go run ./cmd/bundle-galleton -all
 builds:
   - main: ./cmd/elevenlabs
     binary: elevenlabs
+    tags: [galleton_bundle]
     env: [CGO_ENABLED=0]
     goos: [linux, darwin, windows]
     goarch: [amd64, arm64]
@@ -10,15 +14,25 @@ builds:
       - "-s -w -X main.version={{.Version}}"
 archives:
   - formats: [tar.gz]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     format_overrides:
       - goos: windows
         formats: [zip]
     files:
       - README.md
       - docs/commands.md
-      - docs/cli-spec.md
+      - internal/galleton/LICENSE
+      - internal/galleton/bundle/LICENSE
 checksum:
   name_template: checksums.txt
-# Build snapshots locally. Publishing is a separate, explicitly authorized step.
+changelog:
+  use: github
+  filters:
+    exclude: ['^chore', '^ci', '^docs', '^test', '^build']
 release:
-  disable: true
+  github:
+    owner: Microck
+    name: elevenlabs-web-cli
+  draft: false
+  prerelease: false
+  make_latest: true

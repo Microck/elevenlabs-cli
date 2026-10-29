@@ -1,0 +1,24 @@
+---
+title: Profiles and configuration
+description: Keep accounts separate and choose a default.
+---
+
+```sh
+elevenlabs auth login --profile work --session work-session.json
+elevenlabs profile list
+elevenlabs profile use work
+elevenlabs me show
+elevenlabs me show --profile default
+```
+
+An explicit `--profile` overrides the saved selection. Without a selection, the default name is `default`.
+
+```sh
+elevenlabs config path
+elevenlabs config list
+elevenlabs config get default_profile
+elevenlabs config set default_profile work
+elevenlabs profile remove work --yes
+```
+
+Removing the selected profile keeps its name selected, so the next account command asks for login instead of switching accounts silently. `ELEVENLABS_CONFIG_DIR` changes the state directory. Use a disposable directory for tests.

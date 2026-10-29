@@ -1,0 +1,22 @@
+---
+title: Limits and troubleshooting
+description: Understand tested behavior and service restrictions.
+---
+
+## Free-tier connection restriction
+
+`detected_unusual_activity` is a generation restriction, not an expired session. The CLI returns exit 4, removes incomplete file output and does not retry. Stop generation and check the account in your regular browser. Logging in again does not prove generation is permitted.
+
+## Authentication export
+
+A cookie-only export lacks the Firebase refresh token. Use `auth export-script` in the signed-in ElevenLabs tab. Exports without `user_agent` must also be recreated. The CLI does not invent a browser identity.
+
+## Coverage
+
+Browser captures establish successful speech, dialogue, sound and download request shapes. Account and browsing commands worked live with the earlier transport. The Galleton integration is tested with the real pinned daemon against a local Firebase fixture, including credential rotation and restart recovery. Successful live Galleton login and direct generation with the working Windows account remain unverified.
+
+## Not implemented
+
+Music, Studio project creation/export, transcription uploads, standalone voice transformations, dubbing, voice cloning and agent execution are not supported CLI workflows. Their complete request and asynchronous completion contracts have not been verified.
+
+Report the command, exit code and a redacted error when something fails. Do not attach session exports, cookies, authorization headers or account text without reviewing them.

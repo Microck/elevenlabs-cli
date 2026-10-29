@@ -26,8 +26,8 @@ arguments, or commit credentials. The export includes the browser user agent.
 "profile use NAME" selects an imported profile. --profile overrides that choice.
 Galleton owns token refresh and its encrypted vault; local profiles store only
 a session reference. Commands start and lease the engine automatically; it stops
-after ten idle seconds. No OS startup service is installed. Source installs need
-Go once to prepare the pinned engine. Use "auth status --check" for a live check.
+after ten idle seconds. No OS startup service is installed. Release and make builds bundle the engine. Plain go install builds need
+Go once to prepare it. Use "auth status --check" for a live check.
 
 ## Discover before generating
 

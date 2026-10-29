@@ -1,0 +1,60 @@
+---
+title: Examples
+description: Browse voices, generate audio and retrieve history.
+---
+
+## Inspect your account
+
+```sh
+elevenlabs me subscription --format pretty
+elevenlabs model list
+elevenlabs voice list --format jsonl
+elevenlabs voice search narrator --language en --page-size 10
+```
+
+## Generate speech
+
+Generation consumes account credits. Start with a short text file and a stock voice.
+
+```sh
+printf 'Hello.' > narration.txt
+elevenlabs speech generate --text-file narration.txt \
+  --voice Xb7hH8MSUJpSbSDYk0k2 --output narration.mp3
+```
+
+## Generate dialogue
+
+Save this as `dialogue.json`:
+
+```json
+[
+  {"text":"Hello.","voice_id":"Xb7hH8MSUJpSbSDYk0k2"},
+  {"text":"Hi there.","voice_id":"onwK4e9ZLuTAKqWW03F9"}
+]
+```
+
+```sh
+elevenlabs dialogue generate --input dialogue.json --output dialogue.mp3
+```
+
+Speech and dialogue default to the captured `eleven_v4_exp` model. An unsupported model or plan can still be rejected by the service.
+
+## Find and download audio
+
+```sh
+elevenlabs history list --source TTS --search Hello
+elevenlabs history show HISTORY_ID
+elevenlabs history download HISTORY_ID --output saved.mp3
+```
+
+## Sound effects
+
+Disable Explore sharing in the website first. The CLI refuses generation when sharing is enabled and never changes that setting for you.
+
+```sh
+printf 'A short wooden tap.' > prompt.txt
+elevenlabs sound generate --text-file prompt.txt --duration 1 --variants 1
+elevenlabs sound download SOUND_ID --output effect.opus
+```
+
+Audio commands require an output destination. Existing files are never overwritten. Use `--output -` for binary stdout. A failed file download removes its incomplete output; bytes already written to stdout cannot be recalled.
