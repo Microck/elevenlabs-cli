@@ -1,0 +1,24 @@
+version: 2
+project_name: elevenlabs
+builds:
+  - main: ./cmd/elevenlabs
+    binary: elevenlabs
+    env: [CGO_ENABLED=0]
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    ldflags:
+      - "-s -w -X main.version={{.Version}}"
+archives:
+  - formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    files:
+      - README.md
+      - docs/commands.md
+      - docs/cli-spec.md
+checksum:
+  name_template: checksums.txt
+# Build snapshots locally. Publishing is a separate, explicitly authorized step.
+release:
+  disable: true

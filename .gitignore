@@ -1,0 +1,11 @@
+/bin/
+/artifacts/
+*.har
+*credentials*
+*session*.json
+/dist/
+/node_modules/
+*.tgz
+
+/docs/*-requests.json
+/docs/task-record.md

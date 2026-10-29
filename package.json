@@ -1,0 +1,31 @@
+{
+  "name": "elevenlabs-web-cli",
+  "version": "0.1.0",
+  "private": true,
+  "description": "JSON-first terminal client for the ElevenLabs web app",
+  "bin": {
+    "elevenlabs": "scripts/cli.cjs",
+    "elevenlabs-web-cli": "scripts/cli.cjs"
+  },
+  "scripts": {
+    "postinstall": "node scripts/install.cjs",
+    "check": "node --check scripts/cli.cjs && node --check scripts/install.cjs"
+  },
+  "files": [
+    "cmd/",
+    "internal/",
+    "go.mod",
+    "go.sum",
+    "Makefile",
+    "scripts/cli.cjs",
+    "scripts/install.cjs",
+    "scripts/embed.go",
+    "scripts/export-session.js",
+    "docs/commands.md",
+    "docs/cli-spec.md",
+    "docs/verification.md"
+  ],
+  "engines": { "node": ">=22" },
+  "os": ["linux", "darwin", "win32"],
+  "cpu": ["x64", "arm64"]
+}

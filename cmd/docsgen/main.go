@@ -1,0 +1,28 @@
+package main
+
+import (
+	"flag"
+	"fmt"
+	"os"
+
+	"github.com/Microck/elevenlabs-web-cli/internal/cli"
+)
+
+func main() {
+	check := flag.Bool("check", false, "verify the generated reference without writing it")
+	flag.Parse()
+	const path = "docs/commands.md"
+	expected := cli.CommandReference()
+	if *check {
+		actual, err := os.ReadFile(path)
+		if err != nil || string(actual) != expected {
+			fmt.Fprintln(os.Stderr, "command reference is stale; run make docs")
+			os.Exit(1)
+		}
+		return
+	}
+	if err := os.WriteFile(path, []byte(expected), 0644); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+}
