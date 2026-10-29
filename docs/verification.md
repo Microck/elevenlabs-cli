@@ -7,13 +7,15 @@ successful browser captures, fixture tests and live CLI execution.
 
 | Commands | Evidence |
 | --- | --- |
-| auth import/status/refresh/logout, doctor | Original direct auth worked live; the Galleton replacement is exercised with a real pinned daemon and local Firebase fixture |
+| auth login/status/refresh | Live Galleton import, renewal, account check and explicit refresh passed with an exported browser session |
+| auth logout, doctor | Original direct auth worked live; real-daemon fixture tests cover managed session deletion and account checks |
 | profile list/use/remove, config path/list/get/set | Isolated command tests cover saved selection, explicit override, removal and malformed config |
 | me show/subscription, model list | Live API success |
 | voice list/search/collections/show/settings/defaults | Live API success, including settings and history-era capture follow-up |
 | history list/search | Live API success; page envelope preserved |
-| history show/download | Successful Windows browser capture; local HTTP tests cover download request, binary stdout and failures |
-| speech/dialogue generate | Successful Windows browser capture; exact payload fixture tests; live research CLI receives service restriction |
+| history show/download | Live download passed and decoded audio matched the generated sample; browser capture and local HTTP tests cover detail, binary stdout and failures |
+| speech generate | Live released CLI produced a valid 0.679-second MP3 from a three-character sample |
+| dialogue generate | Successful Windows browser capture and exact payload fixture tests; direct live CLI unverified |
 | sound generate/download | Successful Windows browser capture; fixture tests cover payload and Explore sharing guard; direct live CLI unverified |
 | skills list/get, auth export-script, completion | Offline command tests |
 
@@ -30,7 +32,8 @@ SDK bearer headers and then stream from a local HTTP server.
 The lifecycle test starts the managed host from a source build, shares leases,
 refuses shutdown with an active client, drains on stop, and restarts from its
 saved state. No real account or operator engine is used in these tests. Live
-ElevenLabs login with the new Galleton path has not yet been exercised.
+Galleton login, renewal and explicit refresh also passed separately with the
+owner-supplied browser export and released v0.1.0 Linux arm64 binary.
 
 ## Windows capture
 
@@ -51,7 +54,10 @@ The research account/connection returned HTTP 401 with
 The CLI returned exit 4 and removed its newly created output file. Earlier
 browser attempts on the original machine, MacBook and local Camoufox displayed
 the same restriction. Using Camoufox's normal user agent did not remove it.
-The user's existing Windows Helium session generated successfully.
+The user's existing Windows Helium session generated successfully. A later
+CLI check using that account's exported Firebase session also generated speech
+successfully from this research machine. Its history download decoded to exactly
+the same audio. No retry or account upgrade was needed.
 
 This does not establish which combination of account, network and browser
 caused the restriction. No paid upgrade or automatic generation retry was made.

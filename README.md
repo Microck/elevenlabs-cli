@@ -161,7 +161,7 @@ elevenlabs completion powershell >> $PROFILE
 
 ## current limits
 
-account and browsing commands worked live with the earlier transport. the Galleton integration is tested with the real daemon and local Firebase fixtures. successful live login through Galleton and direct generation with the working Windows session remain unverified.
+live checks with an exported browser session passed Galleton login, token renewal, subscription and voice reads, speech generation, and history download. the downloaded audio matched the generated sample. fixture tests also cover credential rotation and engine recovery. direct live dialogue and sound generation remain unverified.
 
 successful browser captures establish the speech, dialogue and download request shapes. the research connection receives `detected_unusual_activity` during generation. the cli reports that restriction without retrying; a valid login does not guarantee generation access.
 

@@ -13,7 +13,7 @@ A cookie-only export lacks the Firebase refresh token. Use `auth export-script` 
 
 ## Coverage
 
-Browser captures establish successful speech, dialogue, sound and download request shapes. Account and browsing commands worked live with the earlier transport. The Galleton integration is tested with the real pinned daemon against a local Firebase fixture, including credential rotation and restart recovery. Successful live Galleton login and direct generation with the working Windows account remain unverified.
+Live checks with an exported browser session passed Galleton login, automatic renewal, explicit refresh, subscription and voice reads, speech generation, and history download. The downloaded sample matched the generated audio after decoding. Real-daemon fixture tests also cover credential rotation and restart recovery. Browser captures establish dialogue and sound request shapes; those two generation workflows remain unverified through the live CLI.
 
 ## Not implemented
 

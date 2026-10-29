@@ -11,6 +11,6 @@ Downloads support Linux, macOS and Windows on amd64 and arm64. Every archive bun
 
 ### Known limits
 
-Generation can be refused by ElevenLabs' free-tier connection checks. Successful browser captures and real-engine fixture tests establish the implemented request shapes, but live Galleton login and successful direct generation with the working Windows account remain unverified. Cookie-only exports cannot authenticate; use `elevenlabs auth export-script` to export the Firebase session.
+Generation can be refused by ElevenLabs' free-tier connection checks. Live checks passed Galleton login and renewal, speech generation, and history download with matching decoded audio. Direct live dialogue and sound generation remain unverified. Cookie-only exports cannot authenticate; use `elevenlabs auth export-script` to export the Firebase session.
 
 Music, Studio, transcription uploads, standalone voice transformations, dubbing, voice cloning and agent execution are not implemented. macOS binaries are not notarized and Windows binaries are not code-signed.
