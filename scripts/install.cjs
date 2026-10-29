@@ -1,27 +1,84 @@
-#!/usr/bin/env node
 'use strict';
 
-const { spawnSync } = require('node:child_process');
-const { mkdirSync } = require('node:fs');
+const { createHash } = require('node:crypto');
+const { createWriteStream } = require('node:fs');
+const { chmod, lstat, mkdir, mkdtemp, readFile, rename, rm, writeFile } = require('node:fs/promises');
 const path = require('node:path');
-
-// Source packages compile the same Go command as make install. No unpublished
-// release URLs or platform downloads are required for a local npm installation.
-const root = path.resolve(__dirname, '..');
+const { Readable, Transform } = require('node:stream');
+const { pipeline } = require('node:stream/promises');
 const { version } = require('../package.json');
-const binary = path.join(root, 'bin', process.platform === 'win32' ? 'elevenlabs.exe' : 'elevenlabs');
-mkdirSync(path.dirname(binary), { recursive: true });
-const bundle = spawnSync('go', ['run', './cmd/bundle-galleton'], { cwd: root, stdio: 'inherit' });
-if (bundle.error || bundle.status !== 0) {
-  console.error('elevenlabs: preparing the pinned session engine requires Go 1.25+ and module download access.');
-  process.exit(bundle.status || 1);
+
+async function download(url, destination) {
+  const response = await fetch(url, { signal: AbortSignal.timeout(120_000) });
+  if (!response.ok || !response.body) {
+    throw new Error(`Download failed (${response.status}): ${url}`);
+  }
+  const hash = createHash('sha256');
+  await pipeline(
+    Readable.fromWeb(response.body),
+    new Transform({
+      transform(chunk, encoding, callback) {
+        hash.update(chunk);
+        callback(null, chunk);
+      },
+    }),
+    createWriteStream(destination, { flags: 'wx' }),
+  );
+  return hash.digest('hex');
 }
-const build = spawnSync('go', ['build', '-tags', 'galleton_bundle', '-trimpath', '-ldflags', `-X main.version=${version}`, '-o', binary, './cmd/elevenlabs'], {
-  cwd: root,
-  stdio: 'inherit',
+
+async function install() {
+  const os = { linux: 'linux', darwin: 'darwin', win32: 'windows' }[process.platform];
+  const arch = { x64: 'amd64', arm64: 'arm64' }[process.arch];
+  if (!os || !arch) {
+    throw new Error(`No ElevenLabs binary is available for ${process.platform}/${process.arch}. Supported platforms are Linux, macOS, and Windows on x64 and arm64.`);
+  }
+  const binary = process.platform === 'win32' ? 'elevenlabs.exe' : 'elevenlabs';
+  const archive = `elevenlabs_${version}_${os}_${arch}.${os === 'windows' ? 'zip' : 'tar.gz'}`;
+  const base = `https://github.com/Microck/elevenlabs-web-cli/releases/download/v${version}`;
+  // Use the package directory so the final rename stays on the same filesystem.
+  const temporary = await mkdtemp(path.join(__dirname, '.install-'));
+  try {
+    const checksumsPath = path.join(temporary, 'checksums.txt');
+    const archivePath = path.join(temporary, archive);
+    await download(`${base}/checksums.txt`, checksumsPath);
+    const checksums = await readFile(checksumsPath, 'utf8');
+    const matches = checksums.split(/\r?\n/).map(line => line.match(/^([a-fA-F0-9]{64})\s+\*?(.+)$/))
+      .filter(match => match && match[2] === archive);
+    if (matches.length !== 1) {
+      throw new Error(`Release v${version} must contain exactly one checksum for ${archive}.`);
+    }
+    const actual = await download(`${base}/${archive}`, archivePath);
+    if (actual !== matches[0][1].toLowerCase()) {
+      throw new Error(`SHA-256 checksum mismatch for ${archive}; the download will not be installed.`);
+    }
+    const extracted = path.join(temporary, 'extracted');
+    await mkdir(extracted);
+    if (os === 'windows') {
+      // Only materialize the expected executable; archive paths never become destinations.
+      const entries = require('fflate').unzipSync(await readFile(archivePath), {
+        filter: entry => entry.name === binary,
+      });
+      if (!entries[binary]) throw new Error(`Release archive is missing ${binary}.`);
+      await writeFile(path.join(extracted, binary), entries[binary], { flag: 'wx' });
+    } else {
+      await require('tar').x({
+        file: archivePath, cwd: extracted, strict: true,
+        filter: (name, entry) => name === binary && entry.type === 'File',
+      });
+    }
+    const source = path.join(extracted, binary);
+    if (!(await lstat(source)).isFile()) {
+      throw new Error(`Release archive does not contain a regular ${binary} file.`);
+    }
+    await chmod(source, 0o755);
+    await rename(source, path.join(__dirname, binary));
+  } finally {
+    await rm(temporary, { recursive: true, force: true });
+  }
+}
+
+install().catch(error => {
+  console.error(`elevenlabs-web-cli installation failed: ${error.message}`);
+  process.exitCode = 1;
 });
-if (build.error) {
-  console.error('elevenlabs: building from source requires Go 1.25 or newer on PATH.');
-  process.exit(1);
-}
-process.exit(build.status ?? 1);

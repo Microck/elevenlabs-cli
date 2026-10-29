@@ -16,3 +16,7 @@
 /docs-site/*.tsbuildinfo
 /internal/galleton/bundle/*.bin
 /internal/galleton/bundle/payload_*.go
+
+/scripts/elevenlabs
+/scripts/elevenlabs.exe
+/scripts/.install-*/

@@ -1,16 +1,16 @@
-## ElevenLabs web CLI v0.1.0
+## ElevenLabs web CLI v0.1.1
 
-Use your ElevenLabs web account from the terminal with JSON output and named profiles.
+Install the CLI through npm, Homebrew, Scoop or AUR:
 
-- Browse account credits, models, voices and generation history.
-- Generate speech, dialogue and sound effects; download audio without overwriting existing files.
-- Import a browser session into Galleton's encrypted vault, with automatic token renewal and a shared local engine.
-- Read embedded agent help, generate shell completions and use the generated command reference.
+```sh
+npm install -g elevenlabs-web-cli
+brew install --cask Microck/tap/elevenlabs
+scoop install microck/elevenlabs
+paru -S elevenlabs-web-cli-bin
+```
 
-Downloads support Linux, macOS and Windows on amd64 and arm64. Every archive bundles the pinned Galleton engine. Verify downloads against `checksums.txt`.
+Add the Scoop bucket first with `scoop bucket add microck https://github.com/Microck/scoop-bucket`.
 
-### Known limits
+The npm installer downloads the matching release archive and checks its SHA-256. Galleton is bundled, so Go is not required. npm needs Node 22+ and enabled install scripts.
 
-Generation can be refused by ElevenLabs' free-tier connection checks. Live checks passed Galleton login and renewal, speech generation, and history download with matching decoded audio. Direct live dialogue and sound generation remain unverified. Cookie-only exports cannot authenticate; use `elevenlabs auth export-script` to export the Firebase session.
-
-Music, Studio, transcription uploads, standalone voice transformations, dubbing, voice cloning and agent execution are not implemented. macOS binaries are not notarized and Windows binaries are not code-signed.
+Live verification passed Galleton login and token renewal, speech generation, and history download with matching decoded audio. Direct live dialogue and sound-effects generation remain unverified. This release does not change CLI commands or authentication behavior.

@@ -19,6 +19,7 @@ archives:
       - goos: windows
         formats: [zip]
     files:
+      - LICENSE
       - README.md
       - docs/commands.md
       - internal/galleton/LICENSE
@@ -36,3 +37,61 @@ release:
   draft: false
   prerelease: false
   make_latest: true
+
+homebrew_casks:
+  - name: elevenlabs
+    commit_author:
+      name: Microck
+      email: contact@micr.dev
+    repository:
+      owner: Microck
+      name: homebrew-tap
+      # The Actions GITHUB_TOKEN cannot write to another repo.
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    homepage: https://github.com/Microck/elevenlabs-web-cli
+    description: Terminal CLI for ElevenLabs
+    license: MIT
+    # The binary is not notarized, so Gatekeeper would kill it on first run
+    # unless the quarantine flag Homebrew sets on the download is removed.
+    hooks:
+      post:
+        install_steps: |
+          on_macos do
+            run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{ .StagedPath }}/elevenlabs"]
+          end
+
+scoops:
+  - name: elevenlabs
+    commit_author:
+      name: Microck
+      email: contact@micr.dev
+    repository:
+      owner: Microck
+      name: scoop-bucket
+      token: "{{ .Env.SCOOP_BUCKET_GITHUB_TOKEN }}"
+    homepage: https://github.com/Microck/elevenlabs-web-cli
+    description: Terminal CLI for ElevenLabs
+    license: MIT
+
+aurs:
+  - name: elevenlabs-web-cli-bin
+    homepage: https://github.com/Microck/elevenlabs-web-cli
+    description: Terminal CLI for ElevenLabs
+    license: MIT
+    maintainers:
+      - Microck <microck at users dot noreply dot github dot com>
+    private_key: "{{ .Env.AUR_SSH_PRIVATE_KEY }}"
+    git_url: ssh://aur@aur.archlinux.org/elevenlabs-web-cli-bin.git
+    skip_upload: auto
+    provides:
+      - elevenlabs-web-cli
+    conflicts:
+      - elevenlabs-web-cli
+    depends:
+      - ca-certificates
+    package: |-
+      install -Dm755 "./elevenlabs" "${pkgdir}/usr/bin/elevenlabs"
+      install -Dm644 "./LICENSE" "${pkgdir}/usr/share/licenses/elevenlabs-web-cli-bin/LICENSE"
+    commit_author:
+      name: Microck
+      email: contact@micr.dev

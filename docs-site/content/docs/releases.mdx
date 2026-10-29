@@ -12,6 +12,6 @@ Stable releases live in the public [GitHub repository](https://github.com/Microc
 3. Commit the changes and push `main`.
 4. Create and push an annotated version tag such as `v0.1.0`.
 
-The tag workflow reruns checks, verifies that the package version matches the tag, builds all six targets with GoReleaser and publishes the release. It does not publish npm, Homebrew, Scoop or AUR packages. Manual workflow dispatch can release an existing version tag.
+The tag workflow reruns checks, verifies that the package version matches the tag, builds all six targets with GoReleaser and publishes the release. It updates the Homebrew cask, Scoop bucket and AUR binary package. After packed npm installations pass on Linux, macOS and Windows, npm publishes using the repository's `NPM_TOKEN` secret. Manual workflow dispatch can release an existing version tag.
 
 Release notes describe user-visible changes and known limits. Releases are stable unless a prerelease is explicitly requested. Never replace a published asset silently; fix the issue and cut another version.

@@ -220,3 +220,11 @@ Release archives, `make install` and local npm installs embed the pinned engine.
 Plain `go install` builds cache the engine on first authenticated use, verifying
 its module checksums. Go is required for that first preparation.
 Old plaintext profile files require a fresh login; no legacy auth path remains.
+
+## Package distribution
+
+The public npm package downloads the matching versioned GitHub release archive,
+verifies its SHA-256 against checksums.txt, and installs only the executable.
+It never compiles source or needs Go. Linux/macOS use tar.gz; Windows uses ZIP.
+Supported CPUs are amd64 and arm64. The same release updates Microck's Homebrew
+cask and Scoop bucket, and the elevenlabs-web-cli-bin AUR package.

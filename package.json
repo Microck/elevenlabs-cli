@@ -1,7 +1,6 @@
 {
   "name": "elevenlabs-web-cli",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.1.1",
   "description": "JSON-first terminal client for the ElevenLabs web app",
   "bin": {
     "elevenlabs": "scripts/cli.cjs",
@@ -12,20 +11,37 @@
     "check": "node --check scripts/cli.cjs && node --check scripts/install.cjs"
   },
   "files": [
-    "cmd/",
-    "internal/",
-    "go.mod",
-    "go.sum",
-    "Makefile",
     "scripts/cli.cjs",
     "scripts/install.cjs",
-    "scripts/embed.go",
-    "scripts/export-session.js",
-    "docs/commands.md",
-    "docs/cli-spec.md",
-    "docs/verification.md"
+    "LICENSE",
+    "internal/galleton/LICENSE",
+    "internal/galleton/bundle/LICENSE"
   ],
-  "engines": { "node": ">=22" },
-  "os": ["linux", "darwin", "win32"],
-  "cpu": ["x64", "arm64"]
+  "engines": {
+    "node": ">=22"
+  },
+  "os": [
+    "linux",
+    "darwin",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "license": "MIT",
+  "author": "Microck",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Microck/elevenlabs-web-cli.git"
+  },
+  "homepage": "https://elevenlabs.micr.dev",
+  "bugs": "https://github.com/Microck/elevenlabs-web-cli/issues",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "tar": "7.5.22",
+    "fflate": "0.8.3"
+  }
 }

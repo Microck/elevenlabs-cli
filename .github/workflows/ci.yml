@@ -18,10 +18,5 @@ jobs:
       - run: make check
       - run: npm ci --ignore-scripts
       - run: npm run check
-      - name: Verify packed installation
-        run: |
-          mkdir -p "$RUNNER_TEMP/elevenlabs-install"
-          archive="$(npm pack --ignore-scripts --silent)"
-          npm install --global --prefix "$RUNNER_TEMP/elevenlabs-install" "./$archive"
-          "$RUNNER_TEMP/elevenlabs-install/bin/elevenlabs" --version
-          "$RUNNER_TEMP/elevenlabs-install/bin/elevenlabs" skills get elevenlabs
+      - name: Inspect npm package contents
+        run: npm pack --ignore-scripts --dry-run

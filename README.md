@@ -19,6 +19,21 @@ if you already use ElevenLabs and want the same account in your terminal, this c
 
 ## quickstart
 
+### package managers
+
+```sh
+npm install -g elevenlabs-web-cli
+
+brew install --cask Microck/tap/elevenlabs
+
+scoop bucket add microck https://github.com/Microck/scoop-bucket
+scoop install microck/elevenlabs
+
+paru -S elevenlabs-web-cli-bin
+```
+
+npm requires Node 22+ and enabled install scripts. it downloads the matching release binary and verifies its checksum. Go is not required. if install scripts were disabled, enable them and run `npm rebuild -g elevenlabs-web-cli`.
+
 ### release downloads
 
 download the archive for your system from [releases](https://github.com/Microck/elevenlabs-web-cli/releases).
@@ -28,7 +43,7 @@ download the archive for your system from [releases](https://github.com/Microck/
 gh release download --repo Microck/elevenlabs-web-cli \
   --pattern '*_linux_arm64.tar.gz' --pattern checksums.txt
 sha256sum --ignore-missing --check checksums.txt
-tar -xzf elevenlabs_0.1.0_linux_arm64.tar.gz
+tar -xzf elevenlabs_0.1.1_linux_arm64.tar.gz
 ./elevenlabs --version
 ```
 
@@ -47,7 +62,7 @@ elevenlabs --version
 
 Go installs into `GOBIN`, or `$(go env GOPATH)/bin` by default. `make install` bundles Galleton. plain `go install ./cmd/elevenlabs` prepares the same pinned engine on first authenticated use.
 
-with Node 22+ and Go installed, `npm install -g .` installs from this checkout. there is no public npm, Homebrew, Scoop or AUR package yet.
+`make install` is the source build. npm installations use the published release binary, including when installed from a checkout.
 
 ### auth
 
