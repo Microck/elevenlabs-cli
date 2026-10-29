@@ -1,12 +1,15 @@
 package cli
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/Microck/elevenlabs-web-cli/internal/elevenlabs"
+	"github.com/Microck/elevenlabs-web-cli/internal/filelock"
 	"github.com/spf13/cobra"
 )
 
@@ -89,13 +92,40 @@ func (a *app) configCommand() *cobra.Command {
 	return parent
 }
 
-func (a *app) removeProfile(name string, yes bool) error {
+func (a *app) removeProfile(ctx context.Context, name string, yes bool) error {
 	if !yes {
 		return usage("pass --yes to remove this local session")
 	}
 	path, err := elevenlabs.SessionPath(a.dir, name)
 	if err != nil {
 		return err
+	}
+	lock, err := a.lockProfile(ctx, path)
+	if err != nil {
+		return err
+	}
+	defer filelock.Release(lock)
+	session, err := elevenlabs.LoadSession(path)
+	if err != nil {
+		var auth *elevenlabs.Error
+		if !errors.As(err, &auth) || auth.Code != 3 {
+			return err
+		}
+		if _, statErr := os.Stat(path); !os.IsNotExist(statErr) {
+			return err
+		}
+	} else {
+		engine, err := a.openEngine(ctx, session.APIKey)
+		if err != nil {
+			return err
+		}
+		defer engine.Close()
+		if err = cleanupRetired(ctx, path, session, engine); err != nil {
+			return err
+		}
+		if err = engine.Forget(ctx, session.GalletonID); err != nil {
+			return elevenlabs.ManagedError(err)
+		}
 	}
 	if err = os.Remove(path); err != nil && !os.IsNotExist(err) {
 		return err

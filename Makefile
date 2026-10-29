@@ -9,7 +9,10 @@ install:
 	go install -trimpath -ldflags "-X main.version=$(VERSION)" ./cmd/elevenlabs
 
 test:
-	go test ./... -count=1
+	@set -eu; engine_dir=$$(mktemp -d); trap 'rm -rf "$$engine_dir"' EXIT; \
+	module_dir=$$(go list -m -f '{{.Dir}}' github.com/Microck/galleton); \
+	(cd "$$module_dir" && go build -trimpath -o "$$engine_dir/galleton" ./cmd/galleton); \
+	ELEVENLABS_TEST_ENGINE="$$engine_dir/galleton" go test ./... -count=1
 
 vet:
 	go vet ./...

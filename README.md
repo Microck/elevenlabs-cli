@@ -1,7 +1,7 @@
 # elevenlabs-web-cli
 
 `elevenlabs` is a terminal client for the ElevenLabs web app. It imports your
-browser session, renews it when needed, and exposes account, voice, speech,
+browser session into Galleton and exposes account, voice, speech,
 dialogue, sound-effect and history commands. Output is JSON by default for
 scripts and agents; `--format pretty` is for reading in a terminal.
 
@@ -56,14 +56,31 @@ elevenlabs doctor
 copy when it is no longer needed. Never commit it. Old test exports without
 `user_agent` must be recreated with the current script.
 
-The CLI stores sessions under your OS user config directory in
-`elevenlabs-web-cli/profiles`. Files use mode 0600 on systems that support Unix
-permissions. Windows uses the containing directory's ACL. Set
-`ELEVENLABS_CONFIG_DIR` to isolate another installation or test environment.
+Galleton v0.1.1 owns token refresh and stores credentials in an encrypted local
+vault. The CLI uses its official Go SDK, following wallapop-cli's bearer-header
+pattern so audio can stream directly from ElevenLabs. Login verifies the new
+session before replacing your profile. The profile file contains a session ID,
+browser user agent and Firebase application key, never access or refresh tokens.
 
-Tokens renew before authenticated requests when expiry approaches. The CLI
-saves the renewed credentials before sending the API request. It does not
-install a daemon, background service or scheduled task.
+The engine starts automatically when needed, is shared across commands, and
+stops ten seconds after its last client exits. On first use, source installations
+build and cache the pinned engine using Go and verify its module checksums.
+No separate Galleton installation or OS startup service is needed.
+
+State lives under your OS user config directory in `elevenlabs-web-cli`.
+`galleton/` contains the vault and local keys; `profiles/` contains references.
+Unix files are private; Windows uses the containing directory's ACL. Protect
+the whole directory: vault encryption does not protect against other processes
+running as your user. Set `ELEVENLABS_CONFIG_DIR` for isolated state.
+Existing plaintext profiles require a fresh `auth login`.
+
+```sh
+elevenlabs auth status          # local reference only
+elevenlabs auth status --check  # engine and account access
+elevenlabs auth refresh
+elevenlabs auth service status
+elevenlabs auth service stop
+```
 
 ## Use the CLI
 
@@ -120,7 +137,7 @@ elevenlabs profile remove work --yes
 ```
 
 An explicit `--profile` overrides the saved selection. Removing a profile only
-removes its local credentials; it does not revoke browser sessions or switch
+forgets its Galleton session and removes its local reference; it does not revoke browser sessions or switch
 to another account. Config contains only settings, not credentials.
 
 ## Agents and shell completion

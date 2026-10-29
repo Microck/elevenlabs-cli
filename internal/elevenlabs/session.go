@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-// Session is the browser's Firebase token pair. It contains no password.
-type Session struct {
+// BrowserSession is read only during import; Galleton owns durable credentials.
+type BrowserSession struct {
 	UserAgent    string    `json:"user_agent"`
 	APIKey       string    `json:"api_key"`
 	RefreshToken string    `json:"refresh_token"`
@@ -19,9 +19,24 @@ type Session struct {
 	ExpiresAt    time.Time `json:"expires_at"`
 }
 
-func (s Session) Validate() error {
+func (s BrowserSession) Validate() error {
 	if s.UserAgent == "" || s.APIKey == "" || s.RefreshToken == "" || s.AccessToken == "" || s.ExpiresAt.IsZero() {
 		return &Error{Code: 2, Message: "session needs user_agent, api_key, refresh_token, access_token and expires_at; export a fresh browser session"}
+	}
+	return nil
+}
+
+// Session is a non-secret reference to credentials in the Galleton vault.
+type Session struct {
+	GalletonID string   `json:"galleton_id"`
+	RetiredIDs []string `json:"retired_ids,omitempty"`
+	APIKey     string   `json:"api_key"`
+	UserAgent  string   `json:"user_agent"`
+}
+
+func (s Session) Validate() error {
+	if s.GalletonID == "" || s.APIKey == "" || s.UserAgent == "" {
+		return &Error{Code: 3, Message: "profile needs a Galleton session; run auth login with a fresh browser export"}
 	}
 	return nil
 }
@@ -53,8 +68,7 @@ func LoadSession(path string) (*Session, error) {
 	return &session, nil
 }
 
-// SaveSession uses a private temporary file so interruption cannot leave half a
-// token pair on disk. Each profile has its own file.
+// SaveSession replaces a profile reference only after the complete file is synced.
 func SaveSession(path string, session *Session) error {
 	if err := session.Validate(); err != nil {
 		return err

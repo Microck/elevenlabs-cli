@@ -23,13 +23,13 @@ commands, named profiles, and diagnostics on stderr.
 - `auth login --session FILE` imports the canonical session JSON from the browser
   export script. `--session -` reads stdin. Never accept passwords or tokens as flags.
 - `auth status` shows local presence and expiry without revealing secrets.
-- `auth refresh` renews the web session and persists it atomically.
-- `auth logout --yes` removes only the chosen local profile.
+- `auth refresh` asks Galleton to renew the web session in its encrypted vault.
+- `auth logout --yes` forgets the managed session and removes the chosen local profile.
 - `profile list` lists local profile names, never token values.
 - `doctor` checks session renewal and account access.
 - `me show`, `me subscription`, `model list`, `voice list` use observed web routes.
 
-Session files live under the OS user config directory in `elevenlabs-web-cli`.
+Profile references live under the OS user config directory in `elevenlabs-web-cli`.
 `ELEVENLABS_CONFIG_DIR` overrides that directory for disposable tests. Directories
 use mode 0700 and files use 0600 on Unix; Windows uses directory ACLs.
 Credential rotation must survive command failure.
@@ -196,3 +196,26 @@ Exports missing it must be recreated; no fabricated browser header is substitute
 prints a Markdown guide. `completion bash|zsh|fish|powershell` prints completion
 scripts. `make docs` generates docs/commands.md from the Cobra tree;
 `make docs-check` verifies that it matches without rewriting files.
+
+## Galleton authentication contract
+
+Galleton v0.1.1 owns Firebase token refresh and encrypted credential storage.
+Login imports the browser JSON into a new engine session, renews it, verifies
+account access, and only then saves a profile reference. A failed replacement
+keeps the previous profile. Local profiles contain the session ID, browser user
+agent and Firebase application key, never access or refresh tokens.
+
+The CLI obtains short-lived bearer headers through the official Go SDK, as
+wallapop-cli does. Audio keeps streaming directly from ElevenLabs. The engine
+serializes refresh across processes. Authentication uses the existing browser
+export because ElevenLabs stores Firebase credentials in localStorage rather
+than marketplace cookies. No password or manual daemon setup is needed.
+
+`auth status` reads local metadata only; `auth status --check` checks Galleton
+and account access. `auth service status` inspects the engine without starting
+it; `auth service stop` stops it when idle. Commands lease the engine and it
+stops ten seconds after the last client exits. No OS startup service is installed. Profile mutation locks serialize login/logout;
+retired session IDs remain recorded until Galleton confirms deletion.
+Source installs build and cache the pinned engine on first authenticated use,
+verifying its module checksums. Go is required for that first preparation.
+Old plaintext profile files require a fresh login; no legacy auth path remains.

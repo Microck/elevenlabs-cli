@@ -24,8 +24,10 @@ arguments, or commit credentials. The export includes the browser user agent.
 
 "auth status" is local. "doctor" renews the session and checks account access.
 "profile use NAME" selects an imported profile. --profile overrides that choice.
-No background renewal service is installed. Each authenticated command renews
-an expiring session and saves rotated credentials before sending its API request.
+Galleton owns token refresh and its encrypted vault; local profiles store only
+a session reference. Commands start and lease the engine automatically; it stops
+after ten idle seconds. No OS startup service is installed. Source installs need
+Go once to prepare the pinned engine. Use "auth status --check" for a live check.
 
 ## Discover before generating
 

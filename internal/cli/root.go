@@ -11,6 +11,8 @@ import (
 	"strings"
 
 	"github.com/Microck/elevenlabs-web-cli/internal/elevenlabs"
+	"github.com/Microck/elevenlabs-web-cli/internal/filelock"
+	"github.com/Microck/elevenlabs-web-cli/internal/galleton"
 	"github.com/spf13/cobra"
 )
 
@@ -20,10 +22,20 @@ type app struct {
 	dir, profile, format, errorFormat string
 	noInput, debug                    bool
 	client                            *elevenlabs.Client
+	apiBase                           string
 }
 
 func Execute(ctx context.Context, version string, args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	a := &app{stdin: stdin, stdout: stdout, stderr: stderr}
+	return a.execute(ctx, version, args)
+}
+func (a *app) execute(ctx context.Context, version string, args []string) int {
+	stdin, stdout, stderr := a.stdin, a.stdout, a.stderr
+	defer func() {
+		if a.client != nil {
+			a.client.Close()
+		}
+	}()
 	root := a.root(version)
 	root.SetArgs(args)
 	root.SetIn(stdin)
@@ -126,8 +138,33 @@ func (a *app) connect() error {
 	if err != nil {
 		return err
 	}
-	a.client = elevenlabs.New(session)
-	a.client.Save = func(s *elevenlabs.Session) error { return elevenlabs.SaveSession(path, s) }
+	a.client = a.newClient(session)
+	a.client.OpenEngine = func(ctx context.Context) (*galleton.Client, error) {
+		engine, err := a.openEngine(ctx, session.APIKey)
+		if err != nil {
+			return nil, err
+		}
+		if len(session.RetiredIDs) > 0 {
+			lock, err := a.lockProfile(ctx, path)
+			if err != nil {
+				engine.Close()
+				return nil, err
+			}
+			defer filelock.Release(lock)
+			current, err := elevenlabs.LoadSession(path)
+			if err == nil && current.GalletonID != session.GalletonID {
+				err = usage("profile changed during this command; retry")
+			}
+			if err == nil {
+				err = cleanupRetired(ctx, path, current, engine)
+			}
+			if err != nil {
+				engine.Close()
+				return nil, err
+			}
+		}
+		return engine, nil
+	}
 	if a.debug {
 		a.client.Debug = a.stderr
 	}
@@ -211,7 +248,7 @@ func (a *app) profiles() *cobra.Command {
 		return a.print(items)
 	}})
 	var yes bool
-	remove := &cobra.Command{Use: "remove NAME", Short: "Remove one local profile session", Args: exact(1), RunE: func(_ *cobra.Command, args []string) error { return a.removeProfile(args[0], yes) }}
+	remove := &cobra.Command{Use: "remove NAME", Short: "Remove one local profile session", Args: exact(1), RunE: func(cmd *cobra.Command, args []string) error { return a.removeProfile(cmd.Context(), args[0], yes) }}
 	remove.Flags().BoolVar(&yes, "yes", false, "confirm removal")
 	cmd.AddCommand(remove, &cobra.Command{Use: "use NAME", Short: "Select an imported profile for future commands", Args: exact(1), RunE: func(_ *cobra.Command, args []string) error { return a.selectProfile(args[0]) }})
 	return cmd
@@ -239,4 +276,12 @@ func readInput(path string, stdin io.Reader) ([]byte, error) {
 		return nil, usage("provide a file or - for stdin")
 	}
 	return os.ReadFile(path)
+}
+
+func (a *app) newClient(session *elevenlabs.Session) *elevenlabs.Client {
+	client := elevenlabs.New(session)
+	if a.apiBase != "" {
+		client.BaseURL = a.apiBase
+	}
+	return client
 }

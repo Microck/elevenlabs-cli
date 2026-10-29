@@ -23,7 +23,7 @@ Local flags:
 
 ## elevenlabs auth
 
-Import and manage a browser session
+Import and manage a Galleton browser session
 
 ```text
 elevenlabs auth [flags]
@@ -47,7 +47,7 @@ Global flags:
 
 ## elevenlabs auth export-script
 
-Print the script to export a signed-in browser session
+Print the signed-in browser export script
 
 ```text
 elevenlabs auth export-script [flags]
@@ -71,7 +71,7 @@ Global flags:
 
 ## elevenlabs auth login
 
-Import a session exported with scripts/export-session.js
+Import a browser export into the managed session engine
 
 ```text
 elevenlabs auth login [flags]
@@ -81,7 +81,7 @@ Local flags:
 
 ```text
   -h, --help             help for login
-      --session string   session JSON file, or - for stdin
+      --session string   browser export JSON file, or - for stdin
 ```
 
 Global flags:
@@ -96,7 +96,7 @@ Global flags:
 
 ## elevenlabs auth logout
 
-Remove the local profile session
+Forget the managed session and local reference
 
 ```text
 elevenlabs auth logout [flags]
@@ -121,7 +121,7 @@ Global flags:
 
 ## elevenlabs auth refresh
 
-Renew the session now
+Renew the session through Galleton
 
 ```text
 elevenlabs auth refresh [flags]
@@ -143,9 +143,81 @@ Global flags:
       --profile string        account profile (default "default")
 ```
 
+## elevenlabs auth service
+
+Inspect or stop the managed session engine
+
+```text
+elevenlabs auth service [flags]
+```
+
+Local flags:
+
+```text
+  -h, --help   help for service
+```
+
+Global flags:
+
+```text
+      --debug                 log request metadata to stderr
+      --error-format string   text or json (default "text")
+      --format string         json, jsonl or pretty (default "json")
+      --no-input              never prompt
+      --profile string        account profile (default "default")
+```
+
+## elevenlabs auth service status
+
+
+
+```text
+elevenlabs auth service status [flags]
+```
+
+Local flags:
+
+```text
+  -h, --help   help for status
+```
+
+Global flags:
+
+```text
+      --debug                 log request metadata to stderr
+      --error-format string   text or json (default "text")
+      --format string         json, jsonl or pretty (default "json")
+      --no-input              never prompt
+      --profile string        account profile (default "default")
+```
+
+## elevenlabs auth service stop
+
+
+
+```text
+elevenlabs auth service stop [flags]
+```
+
+Local flags:
+
+```text
+  -h, --help   help for stop
+```
+
+Global flags:
+
+```text
+      --debug                 log request metadata to stderr
+      --error-format string   text or json (default "text")
+      --format string         json, jsonl or pretty (default "json")
+      --no-input              never prompt
+      --profile string        account profile (default "default")
+```
+
 ## elevenlabs auth status
 
-Show local session presence and expiry
+Show the saved session reference without credentials
 
 ```text
 elevenlabs auth status [flags]
@@ -154,7 +226,8 @@ elevenlabs auth status [flags]
 Local flags:
 
 ```text
-  -h, --help   help for status
+      --check   check the engine and account access
+  -h, --help    help for status
 ```
 
 Global flags:

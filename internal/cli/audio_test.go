@@ -10,9 +10,9 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/Microck/elevenlabs-web-cli/internal/elevenlabs"
+	"github.com/Microck/elevenlabs-web-cli/internal/testengine"
 )
 
 func TestSpeechDownloadWorkflow(t *testing.T) {
@@ -36,8 +36,9 @@ func TestSpeechDownloadWorkflow(t *testing.T) {
 	}))
 	defer server.Close()
 	var output bytes.Buffer
-	client := elevenlabs.New(&elevenlabs.Session{AccessToken: "fixture", ExpiresAt: time.Now().Add(time.Hour)})
+	client := elevenlabs.New(&elevenlabs.Session{GalletonID: "fixture", UserAgent: "Mozilla/5.0 fixture"})
 	client.BaseURL = server.URL
+	client.Engine = testengine.Fixture(t, elevenlabs.Adapter("fixture-key"), server.URL).Client
 	a := &app{stdin: strings.NewReader("Hi."), stdout: &output, stderr: &bytes.Buffer{}, client: client}
 	cmd := a.speech(false)
 	dest := filepath.Join(t.TempDir(), "speech.mp3")
@@ -81,8 +82,9 @@ func TestAudioFailureRemovesPartialFile(t *testing.T) {
 				}
 			}))
 			defer server.Close()
-			client := elevenlabs.New(&elevenlabs.Session{AccessToken: "fixture", ExpiresAt: time.Now().Add(time.Hour)})
+			client := elevenlabs.New(&elevenlabs.Session{GalletonID: "fixture", UserAgent: "Mozilla/5.0 fixture"})
 			client.BaseURL = server.URL
+			client.Engine = testengine.Fixture(t, elevenlabs.Adapter("fixture-key"), server.URL).Client
 			var stdout bytes.Buffer
 			a := &app{stdout: &stdout, client: client}
 			dest := filepath.Join(t.TempDir(), "audio.mp3")
@@ -126,8 +128,9 @@ func TestHistoryBinaryStdout(t *testing.T) {
 		fmt.Fprint(w, "ID3fixture")
 	}))
 	defer server.Close()
-	client := elevenlabs.New(&elevenlabs.Session{AccessToken: "fixture", ExpiresAt: time.Now().Add(time.Hour)})
+	client := elevenlabs.New(&elevenlabs.Session{GalletonID: "fixture", UserAgent: "Mozilla/5.0 fixture"})
 	client.BaseURL = server.URL
+	client.Engine = testengine.Fixture(t, elevenlabs.Adapter("fixture-key"), server.URL).Client
 	var stdout bytes.Buffer
 	a := &app{stdout: &stdout, client: client}
 	cmd := a.historyDownload()
@@ -164,8 +167,9 @@ func TestSoundSharingGateAndCapturedPayload(t *testing.T) {
 				fmt.Fprint(w, `{"sound_generations_with_waveforms":[]}`)
 			}))
 			defer server.Close()
-			client := elevenlabs.New(&elevenlabs.Session{AccessToken: "fixture", ExpiresAt: time.Now().Add(time.Hour)})
+			client := elevenlabs.New(&elevenlabs.Session{GalletonID: "fixture", UserAgent: "Mozilla/5.0 fixture"})
 			client.BaseURL = server.URL
+			client.Engine = testengine.Fixture(t, elevenlabs.Adapter("fixture-key"), server.URL).Client
 			a := &app{stdin: strings.NewReader("One short wooden tap."), stdout: &bytes.Buffer{}, client: client}
 			cmd := a.sound()
 			cmd.SetArgs([]string{"generate", "--text-file", "-"})

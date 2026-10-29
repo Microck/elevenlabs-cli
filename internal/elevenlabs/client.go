@@ -10,9 +10,10 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Microck/elevenlabs-web-cli/internal/galleton"
 )
 
 const APIBase = "https://api.us.elevenlabs.io"
@@ -27,16 +28,57 @@ type Error struct {
 func (e *Error) Error() string { return e.Message }
 
 type Client struct {
-	HTTP     *http.Client
-	BaseURL  string
-	TokenURL string
-	Session  *Session
-	Save     func(*Session) error
-	Debug    io.Writer
+	HTTP       *http.Client
+	BaseURL    string
+	Session    *Session
+	Debug      io.Writer
+	Engine     *galleton.Client
+	OpenEngine func(context.Context) (*galleton.Client, error)
 }
 
 func New(session *Session) *Client {
-	return &Client{HTTP: &http.Client{Timeout: 2 * time.Minute, CheckRedirect: func(_ *http.Request, _ []*http.Request) error { return http.ErrUseLastResponse }}, BaseURL: APIBase, TokenURL: TokenURL, Session: session}
+	return &Client{HTTP: &http.Client{Timeout: 2 * time.Minute, CheckRedirect: func(_ *http.Request, _ []*http.Request) error { return http.ErrUseLastResponse }}, BaseURL: APIBase, Session: session}
+}
+func (c *Client) engine(ctx context.Context) (*galleton.Client, error) {
+	if c.Engine == nil {
+		if c.OpenEngine == nil {
+			return nil, &Error{Code: 3, Message: "no managed session; run auth login"}
+		}
+		engine, err := c.OpenEngine(ctx)
+		if err != nil {
+			return nil, err
+		}
+		c.Engine = engine
+	}
+	return c.Engine, nil
+}
+func (c *Client) Close() {
+	if c.Engine != nil {
+		c.Engine.Close()
+	}
+}
+func ManagedError(err error) error {
+	if err == nil {
+		return nil
+	}
+	var failure *galleton.Error
+	if !errors.As(err, &failure) {
+		return err
+	}
+	code := 1
+	message := "Galleton could not complete the operation; inspect auth service status before retrying"
+	switch {
+	case failure.Code == "reauth_required" || failure.Code == "renewal_uncertain" || failure.Status == 404:
+		code = 3
+		message = "Galleton needs a fresh browser session; run auth login"
+	case failure.Status == 401 || failure.Status == 403:
+		code = 3
+		message = "Galleton rejected local access or the provider origin"
+	case failure.Status == 429:
+		code = 5
+		message = "Galleton is rate limited; wait before retrying"
+	}
+	return &Error{Code: code, Message: message}
 }
 
 func (c *Client) send(req *http.Request) (*http.Response, error) {
@@ -103,60 +145,19 @@ func responseError(response *http.Response) error {
 	return &Error{Code: code, Status: response.StatusCode, Message: message}
 }
 
-// Refresh follows the Firebase SDK's form-encoded token exchange. Persist before
-// making an API call so a later API failure does not discard rotated credentials.
+// Refresh delegates rotation and persistence to the shared engine.
 func (c *Client) Refresh(ctx context.Context) error {
-	if c.Session == nil {
-		return &Error{Code: 3, Message: "no session; run elevenlabs auth login --session FILE"}
-	}
-	endpoint, err := url.Parse(c.TokenURL)
+	engine, err := c.engine(ctx)
 	if err != nil {
 		return err
 	}
-	query := endpoint.Query()
-	query.Set("key", c.Session.APIKey)
-	endpoint.RawQuery = query.Encode()
-	form := url.Values{"grant_type": {"refresh_token"}, "refresh_token": {c.Session.RefreshToken}}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint.String(), strings.NewReader(form.Encode()))
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	response, err := c.send(req)
-	if err != nil {
-		return err
-	}
-	defer response.Body.Close()
-	var tokens struct {
-		AccessToken  string `json:"access_token"`
-		RefreshToken string `json:"refresh_token"`
-		ExpiresIn    string `json:"expires_in"`
-	}
-	if err := json.NewDecoder(response.Body).Decode(&tokens); err != nil {
-		return fmt.Errorf("invalid token response: %w", err)
-	}
-	seconds, err := strconv.Atoi(tokens.ExpiresIn)
-	if err != nil || seconds <= 0 || tokens.AccessToken == "" || tokens.RefreshToken == "" {
-		return &Error{Code: 6, Message: "token response missing valid tokens or expiry"}
-	}
-	updated := Session{UserAgent: c.Session.UserAgent, APIKey: c.Session.APIKey, AccessToken: tokens.AccessToken, RefreshToken: tokens.RefreshToken, ExpiresAt: time.Now().Add(time.Duration(seconds) * time.Second)}
-	if c.Save != nil {
-		if err := c.Save(&updated); err != nil {
-			return fmt.Errorf("save renewed session: %w", err)
-		}
-	}
-	*c.Session = updated
-	return nil
+	_, err = engine.Refresh(ctx, c.Session.GalletonID)
+	return ManagedError(err)
 }
 
 func (c *Client) Request(ctx context.Context, method, path string, body io.Reader, contentType string) (*http.Response, error) {
 	if c.Session == nil {
 		return nil, &Error{Code: 3, Message: "no session; run elevenlabs auth login --session FILE"}
-	}
-	if time.Until(c.Session.ExpiresAt) < 30*time.Second {
-		if err := c.Refresh(ctx); err != nil {
-			return nil, err
-		}
 	}
 	relative, err := url.Parse(path)
 	if err != nil || relative.IsAbs() || relative.Host != "" || !(strings.HasPrefix(path, "/v1/") || path == "/sound-generation") {
@@ -166,7 +167,19 @@ func (c *Client) Request(ctx context.Context, method, path string, body io.Reade
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Authorization", "Bearer "+c.Session.AccessToken)
+	engine, err := c.engine(ctx)
+	if err != nil {
+		return nil, err
+	}
+	headers, err := engine.Headers(ctx, c.Session.GalletonID, c.BaseURL)
+	if err != nil {
+		return nil, ManagedError(err)
+	}
+	authorization := headers.Headers["Authorization"]
+	if !strings.HasPrefix(authorization, "Bearer ") || len(authorization) <= 7 || strings.ContainsAny(authorization, "\r\n") {
+		return nil, &Error{Code: 6, Message: "Galleton returned no valid bearer header"}
+	}
+	req.Header.Set("Authorization", authorization)
 	if contentType != "" {
 		req.Header.Set("Content-Type", contentType)
 	}

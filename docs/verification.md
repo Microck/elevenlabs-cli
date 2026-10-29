@@ -7,7 +7,7 @@ successful browser captures, fixture tests and live CLI execution.
 
 | Commands | Evidence |
 | --- | --- |
-| auth import/status/refresh/logout, doctor | Live account import and renewal worked; isolated tests cover persistence, errors and local removal |
+| auth import/status/refresh/logout, doctor | Original direct auth worked live; the Galleton replacement is exercised with a real pinned daemon and local Firebase fixture |
 | profile list/use/remove, config path/list/get/set | Isolated command tests cover saved selection, explicit override, removal and malformed config |
 | me show/subscription, model list | Live API success |
 | voice list/search/collections/show/settings/defaults | Live API success, including settings and history-era capture follow-up |
@@ -19,10 +19,18 @@ successful browser captures, fixture tests and live CLI execution.
 
 ## Authentication
 
-The Firebase refresh endpoint requires the ElevenLabs web referrer. Tests check
-that header and preservation of the imported browser user agent. The session
-schema requires `user_agent`; exports made before that field was added must be
-recreated. No historical-state conversion or guessed browser identity is used.
+The Galleton adapter reproduces the captured Firebase form exchange, including
+the app referrer and the exported browser user agent. Tests run the real v0.1.1
+daemon and SDK against a local provider that rotates refresh credentials. They
+verify renewal before requests, encrypted vault storage, recovery after engine
+restart and API failure, origin restrictions, failed-login preservation, session
+replacement/deletion, and token-free local profiles. Audio tests obtain real
+SDK bearer headers and then stream from a local HTTP server.
+
+The lifecycle test starts the managed host from a source build, shares leases,
+refuses shutdown with an active client, drains on stop, and restarts from its
+saved state. No real account or operator engine is used in these tests. Live
+ElevenLabs login with the new Galleton path has not yet been exercised.
 
 ## Windows capture
 
@@ -77,7 +85,15 @@ registry registration are not part of these checks.
 The source project passed `make check` (vet, all tests, generated command docs
 and formatting) in a disposable Raft workspace. `make install` with a temporary
 GOBIN and a fresh npm installation from the packed source both succeeded.
-The npm-installed command passed session export/import, profile selection,
+Before the Galleton change, the npm-installed command passed session export/import, profile selection,
 status and config reads, shell completion, embedded guide output, invalid-command
 exit 2, profile removal and missing-session exit 3, using disposable fixture
 credentials without network requests. Node script syntax checks passed.
+
+## Galleton replacement checks
+
+The complete `make check` passed in a disposable Raft workspace after the
+Galleton change, including the real-engine auth and lifecycle tests described
+above. Node syntax checks and installation from the packed npm source passed.
+The installed package exposes the new managed-login help. The Windows amd64
+cross-build passed; native Windows Galleton lifecycle remains untested.
