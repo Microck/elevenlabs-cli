@@ -4,7 +4,7 @@ export const docs = defineDocs({ dir: 'content/docs' });
 
 export default defineConfig({
   mdxOptions: {
-    // Shiki themes chosen to sit on the true-black ground the site uses.
+    // Keep syntax colors readable in both documentation themes.
     rehypeCodeOptions: {
       themes: { light: 'github-light', dark: 'github-dark-default' },
     },

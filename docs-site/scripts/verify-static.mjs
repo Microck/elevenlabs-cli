@@ -18,14 +18,14 @@ assert(htmlFiles.length >= 12, 'Expected the home page and documentation pages')
 for (const path of htmlFiles) {
   const html = await readFile(path, 'utf8');
   for (const match of html.matchAll(/(?:href|src)="(\/(?!\/)[^"?#]*)(?:[?#][^"]*)?"/g)) {
-    assert(match[1].startsWith('/elevenlabs-web-cli/'), `Unprefixed URL: ${match[1]}`);
-    const target = join(output, decodeURIComponent(match[1].slice('/elevenlabs-web-cli'.length))); 
+    const target = join(output, decodeURIComponent(match[1]));
     const info = await stat(target);
     if (info.isDirectory()) await stat(join(target, 'index.html'));
   }
 }
+assert((await readFile(join(output, 'CNAME'), 'utf8')).trim() === 'elevenlabs.micr.dev');
 const index = await readFile(join(output, 'api/search'));
-assert((await readFile(join(output, 'llms.txt'), 'utf8')).includes('/elevenlabs-web-cli/docs/auth'));
+assert((await readFile(join(output, 'llms.txt'), 'utf8')).includes('https://elevenlabs.micr.dev/docs/auth'));
 const server = createServer((_request, response) => {
   response.setHeader('Content-Type', 'application/json');
   response.end(index);

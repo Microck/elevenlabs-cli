@@ -8,7 +8,6 @@ const config = {
   reactStrictMode: true,
   turbopack: { root: fileURLToPath(new URL('.', import.meta.url)) },
   output: 'export',
-  basePath: '/elevenlabs-web-cli',
   trailingSlash: true,
   images: { unoptimized: true },
 };

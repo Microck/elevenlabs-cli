@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/Microck/elevenlabs-web-cli/releases">releases</a> ·
-  <a href="https://microck.github.io/elevenlabs-web-cli/docs/">documentation</a> ·
+  <a href="https://elevenlabs.micr.dev/docs/">documentation</a> ·
   <a href="docs-site/content/docs/examples.mdx">examples</a> ·
   <a href="docs/commands.md">command reference</a>
 </p>
