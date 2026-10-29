@@ -33,7 +33,7 @@ changelog:
 release:
   github:
     owner: Microck
-    name: elevenlabs-web-cli
+    name: elevenlabs-cli
   draft: false
   prerelease: false
   make_latest: true
@@ -48,7 +48,7 @@ homebrew_casks:
       name: homebrew-tap
       # The Actions GITHUB_TOKEN cannot write to another repo.
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
-    homepage: https://github.com/Microck/elevenlabs-web-cli
+    homepage: https://github.com/Microck/elevenlabs-cli
     description: Terminal CLI for ElevenLabs
     license: MIT
     # The binary is not notarized, so Gatekeeper would kill it on first run
@@ -69,13 +69,13 @@ scoops:
       owner: Microck
       name: scoop-bucket
       token: "{{ .Env.SCOOP_BUCKET_GITHUB_TOKEN }}"
-    homepage: https://github.com/Microck/elevenlabs-web-cli
+    homepage: https://github.com/Microck/elevenlabs-cli
     description: Terminal CLI for ElevenLabs
     license: MIT
 
 aurs:
   - name: elevenlabs-web-cli-bin
-    homepage: https://github.com/Microck/elevenlabs-web-cli
+    homepage: https://github.com/Microck/elevenlabs-cli
     description: Terminal CLI for ElevenLabs
     license: MIT
     maintainers:

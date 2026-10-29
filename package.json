@@ -33,10 +33,10 @@
   "author": "Microck",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Microck/elevenlabs-web-cli.git"
+    "url": "git+https://github.com/Microck/elevenlabs-cli.git"
   },
   "homepage": "https://elevenlabs.micr.dev",
-  "bugs": "https://github.com/Microck/elevenlabs-web-cli/issues",
+  "bugs": "https://github.com/Microck/elevenlabs-cli/issues",
   "publishConfig": {
     "access": "public"
   },

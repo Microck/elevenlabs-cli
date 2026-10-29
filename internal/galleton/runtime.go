@@ -20,8 +20,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Microck/elevenlabs-web-cli/internal/filelock"
-	"github.com/Microck/elevenlabs-web-cli/internal/galleton/bundle"
+	"github.com/Microck/elevenlabs-cli/internal/filelock"
+	"github.com/Microck/elevenlabs-cli/internal/galleton/bundle"
 )
 
 const hostCommand = "__galleton-host"

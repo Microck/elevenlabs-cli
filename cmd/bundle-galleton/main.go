@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/Microck/elevenlabs-web-cli/internal/galleton/bundle"
+	"github.com/Microck/elevenlabs-cli/internal/galleton/bundle"
 )
 
 func main() {

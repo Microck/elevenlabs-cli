@@ -27,13 +27,13 @@ npm requires Node 22+ and enabled install scripts. It downloads the matching rel
 
 ## GitHub releases
 
-Download the archive for your OS and architecture from [Releases](https://github.com/Microck/elevenlabs-web-cli/releases).
+Download the archive for your OS and architecture from [Releases](https://github.com/Microck/elevenlabs-cli/releases).
 
 Release archives support Linux, macOS and Windows on amd64 and arm64. They include Galleton, so Go is not needed at runtime. Extract `elevenlabs` or `elevenlabs.exe` into a directory on PATH.
 
 ```sh
 # Example: Linux arm64. Use linux_amd64, darwin_arm64 or darwin_amd64 as needed.
-gh release download --repo Microck/elevenlabs-web-cli --pattern '*_linux_arm64.tar.gz' --pattern checksums.txt
+gh release download --repo Microck/elevenlabs-cli --pattern '*_linux_arm64.tar.gz' --pattern checksums.txt
 sha256sum --ignore-missing --check checksums.txt
 tar -xzf elevenlabs_0.1.1_linux_arm64.tar.gz
 ./elevenlabs --version
@@ -46,8 +46,8 @@ On macOS use `shasum -a 256 ARCHIVE` and compare with `checksums.txt`. Windows a
 Requires Go 1.25 or newer.
 
 ```sh
-gh repo clone Microck/elevenlabs-web-cli
-cd elevenlabs-web-cli
+gh repo clone Microck/elevenlabs-cli
+cd elevenlabs-cli
 make install
 elevenlabs --version
 ```

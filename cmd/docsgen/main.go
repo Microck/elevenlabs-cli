@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/Microck/elevenlabs-web-cli/internal/cli"
+	"github.com/Microck/elevenlabs-cli/internal/cli"
 )
 
 func main() {

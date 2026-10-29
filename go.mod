@@ -1,4 +1,4 @@
-module github.com/Microck/elevenlabs-web-cli
+module github.com/Microck/elevenlabs-cli
 
 go 1.25.0
 

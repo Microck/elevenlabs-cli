@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Microck/elevenlabs-web-cli/internal/galleton/bundle"
+	"github.com/Microck/elevenlabs-cli/internal/galleton/bundle"
 )
 
 func TestMain(m *testing.M) {

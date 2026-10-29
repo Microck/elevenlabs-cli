@@ -8,8 +8,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Microck/elevenlabs-web-cli/internal/elevenlabs"
-	"github.com/Microck/elevenlabs-web-cli/internal/filelock"
+	"github.com/Microck/elevenlabs-cli/internal/elevenlabs"
+	"github.com/Microck/elevenlabs-cli/internal/filelock"
 	"github.com/spf13/cobra"
 )
 

@@ -10,9 +10,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/Microck/elevenlabs-web-cli/internal/elevenlabs"
-	"github.com/Microck/elevenlabs-web-cli/internal/filelock"
-	"github.com/Microck/elevenlabs-web-cli/internal/galleton"
+	"github.com/Microck/elevenlabs-cli/internal/elevenlabs"
+	"github.com/Microck/elevenlabs-cli/internal/filelock"
+	"github.com/Microck/elevenlabs-cli/internal/galleton"
 	"github.com/spf13/cobra"
 )
 

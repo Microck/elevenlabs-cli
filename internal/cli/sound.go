@@ -5,7 +5,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/Microck/elevenlabs-web-cli/internal/elevenlabs"
+	"github.com/Microck/elevenlabs-cli/internal/elevenlabs"
 	"github.com/spf13/cobra"
 )
 

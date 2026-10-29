@@ -1,9 +1,12 @@
 <p align="center">
-  <img src=".github/assets/elevenlabs-cli-logo.svg" width="720" alt="elevenlabs cli">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/assets/elevenlabs-cli-logo-dark.svg">
+    <img src=".github/assets/elevenlabs-cli-logo.svg" width="720" alt="ElevenLabs CLI">
+  </picture>
 </p>
 
 <p align="center">
-  <a href="https://github.com/Microck/elevenlabs-web-cli/releases">releases</a> ·
+  <a href="https://github.com/Microck/elevenlabs-cli/releases">releases</a> ·
   <a href="https://elevenlabs.micr.dev/docs/">documentation</a> ·
   <a href="docs-site/content/docs/examples.mdx">examples</a> ·
   <a href="docs/commands.md">command reference</a>
@@ -36,11 +39,11 @@ npm requires Node 22+ and enabled install scripts. it downloads the matching rel
 
 ### release downloads
 
-download the archive for your system from [releases](https://github.com/Microck/elevenlabs-web-cli/releases).
+download the archive for your system from [releases](https://github.com/Microck/elevenlabs-cli/releases).
 
 ```sh
 # example: linux arm64
-gh release download --repo Microck/elevenlabs-web-cli \
+gh release download --repo Microck/elevenlabs-cli \
   --pattern '*_linux_arm64.tar.gz' --pattern checksums.txt
 sha256sum --ignore-missing --check checksums.txt
 tar -xzf elevenlabs_0.1.1_linux_arm64.tar.gz
@@ -54,8 +57,8 @@ archives cover linux, macos and windows on amd64 and arm64. windows downloads ar
 requires Go 1.25 or newer:
 
 ```sh
-gh repo clone Microck/elevenlabs-web-cli
-cd elevenlabs-web-cli
+gh repo clone Microck/elevenlabs-cli
+cd elevenlabs-cli
 make install
 elevenlabs --version
 ```

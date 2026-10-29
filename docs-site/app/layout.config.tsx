@@ -3,11 +3,8 @@ import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 export const baseOptions: BaseLayoutProps = {
   nav: {
     title: (
-      <span className="inline-flex items-center gap-2 font-semibold">
-        <span aria-hidden="true" className="font-bold tracking-[-0.2em] pr-2">Ⅱ</span>
-        <span>ElevenLabs CLI</span>
-      </span>
+      <img src="/elevenlabs-cli-logo.svg" alt="ElevenLabs CLI" width={190} height={21} className="h-auto w-[190px] dark:invert" />
     ),
   },
-  githubUrl: 'https://github.com/Microck/elevenlabs-web-cli',
+  githubUrl: 'https://github.com/Microck/elevenlabs-cli',
 };

@@ -35,7 +35,7 @@ async function install() {
   }
   const binary = process.platform === 'win32' ? 'elevenlabs.exe' : 'elevenlabs';
   const archive = `elevenlabs_${version}_${os}_${arch}.${os === 'windows' ? 'zip' : 'tar.gz'}`;
-  const base = `https://github.com/Microck/elevenlabs-web-cli/releases/download/v${version}`;
+  const base = `https://github.com/Microck/elevenlabs-cli/releases/download/v${version}`;
   // Use the package directory so the final rename stays on the same filesystem.
   const temporary = await mkdtemp(path.join(__dirname, '.install-'));
   try {

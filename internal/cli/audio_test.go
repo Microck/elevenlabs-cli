@@ -11,8 +11,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Microck/elevenlabs-web-cli/internal/elevenlabs"
-	"github.com/Microck/elevenlabs-web-cli/internal/testengine"
+	"github.com/Microck/elevenlabs-cli/internal/elevenlabs"
+	"github.com/Microck/elevenlabs-cli/internal/testengine"
 )
 
 func TestSpeechDownloadWorkflow(t *testing.T) {

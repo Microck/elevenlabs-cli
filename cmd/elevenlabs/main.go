@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/Microck/elevenlabs-web-cli/internal/cli"
-	"github.com/Microck/elevenlabs-web-cli/internal/galleton"
+	"github.com/Microck/elevenlabs-cli/internal/cli"
+	"github.com/Microck/elevenlabs-cli/internal/galleton"
 )
 
 var version = "dev"

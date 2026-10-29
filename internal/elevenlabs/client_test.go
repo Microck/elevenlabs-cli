@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/Microck/elevenlabs-web-cli/internal/testengine"
+	"github.com/Microck/elevenlabs-cli/internal/testengine"
 	"net/http"
 	"net/http/httptest"
 	"os"

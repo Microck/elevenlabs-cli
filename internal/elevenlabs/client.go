@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Microck/elevenlabs-web-cli/internal/galleton"
+	"github.com/Microck/elevenlabs-cli/internal/galleton"
 )
 
 const APIBase = "https://api.us.elevenlabs.io"

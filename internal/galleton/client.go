@@ -1,4 +1,4 @@
-// Package galleton integrates the official Go SDK with elevenlabs-web-cli's lifecycle.
+// Package galleton integrates the official Go SDK with elevenlabs-cli's lifecycle.
 // Token renewal and storage are exclusively implemented by the pinned daemon.
 package galleton
 

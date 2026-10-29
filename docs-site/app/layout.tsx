@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://elevenlabs.micr.dev/'),
-  title: { default: 'elevenlabs-web-cli', template: '%s | elevenlabs-web-cli' },
+  title: { default: 'elevenlabs-cli', template: '%s | elevenlabs-cli' },
   description: 'Use ElevenLabs from the terminal: voices, speech, dialogue and history, with JSON output.',
 };
 

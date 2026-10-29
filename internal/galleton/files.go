@@ -15,7 +15,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/Microck/elevenlabs-web-cli/internal/galleton/bundle"
+	"github.com/Microck/elevenlabs-cli/internal/galleton/bundle"
 )
 
 func privateDir(dir string) error {

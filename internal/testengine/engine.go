@@ -16,7 +16,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Microck/elevenlabs-web-cli/internal/galleton"
+	"github.com/Microck/elevenlabs-cli/internal/galleton"
 )
 
 type Engine struct {

@@ -3,10 +3,10 @@ import Link from 'next/link';
 export default function Home() {
   return <>
     <header className="flex h-[50px] items-center justify-between border-b px-6 lg:px-10">
-      <Link href="/" className="font-semibold"><span aria-hidden="true" className="pr-2 font-bold">Ⅱ</span>ElevenLabs CLI</Link>
+      <Link href="/" aria-label="ElevenLabs CLI home"><img src="/elevenlabs-cli-logo.svg" alt="ElevenLabs CLI" width={190} height={21} className="h-auto w-[150px] sm:w-[190px] dark:invert" /></Link>
       <nav className="flex gap-6 text-sm" aria-label="Main navigation">
         <Link href="/docs">Documentation</Link>
-        <a href="https://github.com/Microck/elevenlabs-web-cli">GitHub</a>
+        <a href="https://github.com/Microck/elevenlabs-cli">GitHub</a>
       </nav>
     </header>
     <main className="mx-auto flex w-full max-w-[848px] flex-1 flex-col gap-6 px-6 py-16 lg:py-24">
@@ -14,7 +14,7 @@ export default function Home() {
       <p className="max-w-2xl text-lg text-fd-muted-foreground">Use your ElevenLabs account from the terminal to browse voices, generate speech and dialogue, and download audio.</p>
       <nav className="flex flex-wrap gap-3 text-sm font-medium" aria-label="Get started">
         <Link className="rounded-lg bg-fd-primary px-4 py-2.5 text-fd-primary-foreground" href="/docs/install">Get started</Link>
-        <a className="rounded-lg border px-4 py-2.5" href="https://github.com/Microck/elevenlabs-web-cli/releases">Download the CLI</a>
+        <a className="rounded-lg border px-4 py-2.5" href="https://github.com/Microck/elevenlabs-cli/releases">Download the CLI</a>
       </nav>
       <section className="mt-6" aria-labelledby="session-heading">
         <h2 id="session-heading" className="mb-4 text-xl font-semibold">Connect your browser session</h2>
