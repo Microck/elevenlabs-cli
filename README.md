@@ -6,6 +6,12 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/Microck/elevenlabs-cli/releases"><picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/release/Microck/elevenlabs-cli.svg?variant=secondary&amp;size=xs&amp;logo=false&amp;mode=dark"><img src="https://shieldcn.dev/github/release/Microck/elevenlabs-cli.svg?variant=secondary&amp;size=xs&amp;logo=false&amp;mode=light" alt="release"></picture></a>
+  <a href="https://github.com/Microck/elevenlabs-cli/actions/workflows/ci.yml"><picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/ci/Microck/elevenlabs-cli.svg?workflow=ci.yml&amp;branch=main&amp;variant=secondary&amp;size=xs&amp;logo=false&amp;mode=dark"><img src="https://shieldcn.dev/github/ci/Microck/elevenlabs-cli.svg?workflow=ci.yml&amp;branch=main&amp;variant=secondary&amp;size=xs&amp;logo=false&amp;mode=light" alt="ci status"></picture></a>
+  <a href="LICENSE"><picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/license/Microck/elevenlabs-cli.svg?variant=secondary&amp;size=xs&amp;logo=false&amp;mode=dark"><img src="https://shieldcn.dev/github/license/Microck/elevenlabs-cli.svg?variant=secondary&amp;size=xs&amp;logo=false&amp;mode=light" alt="license"></picture></a>
+</p>
+
+<p align="center">
   <a href="https://github.com/Microck/elevenlabs-cli/releases">releases</a> ·
   <a href="https://elevenlabs.micr.dev/docs/">documentation</a> ·
   <a href="docs-site/content/docs/examples.mdx">examples</a> ·
